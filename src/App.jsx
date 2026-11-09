@@ -156,15 +156,6 @@ function Landmark({ size = 16, className = '', style = {} }) {
   );
 }
 
-function Lock({ size = 16, className = '', style = {} }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  );
-}
-
 function UserCheck({ size = 16, className = '', style = {} }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
@@ -177,7 +168,7 @@ function UserCheck({ size = 16, className = '', style = {} }) {
 
 // ============================================================================
 // 2. SIGNATURE TYPOGRAPHIQUE : GRAND « T » GOTHIQUE & TRIBAL INTUITIF
-// S'adapte automatiquement à tous les formats de téléphones, tablettes et PC.
+// Calibré pour ne jamais déborder ni superposer les éléments voisins.
 // ============================================================================
 function GothicTribalBrandMark({ onClick }) {
   const prefixTextRef = useRef(null);
@@ -196,120 +187,115 @@ function GothicTribalBrandMark({ onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="group text-left focus:outline-none select-none inline-flex flex-col max-w-full"
+      className="group text-left focus:outline-none select-none inline-flex items-center max-w-full"
       aria-label="Ta référence.com"
     >
-      <div className="relative inline-flex items-end max-w-full">
-        <svg
-          viewBox={`0 0 ${dotX + 68} 76`}
-          className="h-11 xs:h-12 sm:h-14 md:h-16 w-auto max-w-[72vw] sm:max-w-none overflow-visible transition-transform duration-300 group-active:scale-[0.98]"
-          fill="none"
+      <svg
+        viewBox={`0 0 ${dotX + 68} 76`}
+        className="h-9 xs:h-10 sm:h-12 md:h-13 w-auto max-w-[66vw] sm:max-w-none overflow-visible transition-transform duration-300 group-active:scale-[0.98]"
+        fill="none"
+      >
+        <defs>
+          <linearGradient id="gothicTribalMasterInk" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#120C09" />
+            <stop offset="55%" stopColor="#231915" />
+            <stop offset="100%" stopColor="#3B2A22" />
+          </linearGradient>
+          <linearGradient id="bladeEdgeGold" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#D8C394" />
+            <stop offset="70%" stopColor="#E6D8B8" />
+            <stop offset="100%" stopColor="#231915" />
+          </linearGradient>
+        </defs>
+
+        {/* 1. TRAVERSE HORIZONTALE SUPÉRIEURE DU GRAND "T" */}
+        <path
+          d={`M 4 16
+              L 12 10
+              L 52 10
+              L ${dotX - 6} 12
+              L ${dotX + 4} 16
+              L ${dotX - 4} 20
+              L 52 21
+              L 12 22
+              Z`}
+          fill="url(#gothicTribalMasterInk)"
+        />
+
+        <path d="M 4 16 L 13 9 L 13 27 L 7 23 Z" fill="#120C09" />
+        <path d="M 13 22 L 22 22 L 16 28 Z" fill="#231915" />
+
+        <line
+          x1="14"
+          y1="15.5"
+          x2={dotX}
+          y2="16"
+          stroke="url(#bladeEdgeGold)"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+        />
+
+        {/* 2. FÛT VERTICAL FRANC ET IMMÉDIATEMENT LISIBLE DU GRAND "T" */}
+        <path
+          d="M 24 10
+             L 38 10
+             L 38 60
+             L 45 68
+             L 31 71
+             L 17 68
+             L 24 60
+             Z"
+          fill="url(#gothicTribalMasterInk)"
+        />
+
+        <line x1="31" y1="20" x2="31" y2="63" stroke="#E6D8B8" strokeWidth="1.1" />
+        <polygon points="31,29 35,36 31,43 27,36" fill="#E6D8B8" />
+
+        <path d="M 24 32 L 18 36 L 24 40 Z" fill="#231915" />
+        <path d="M 38 32 L 44 36 L 38 40 Z" fill="#231915" />
+
+        <polygon
+          points={`${dotX},13 ${dotX + 4},16 ${dotX},21 ${dotX - 3},16`}
+          fill="#120C09"
+        />
+
+        {/* 3. TEXTE RESSERRÉ "a référence.com" */}
+        <text
+          ref={prefixTextRef}
+          x="50"
+          y="57"
+          fill="#231915"
+          fontFamily="Georgia, 'Times New Roman', serif"
+          fontSize="31"
+          fontWeight="500"
+          letterSpacing="-0.3"
         >
-          <defs>
-            <linearGradient id="gothicTribalMasterInk" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#120C09" />
-              <stop offset="55%" stopColor="#231915" />
-              <stop offset="100%" stopColor="#3B2A22" />
-            </linearGradient>
-            <linearGradient id="bladeEdgeGold" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#D8C394" />
-              <stop offset="70%" stopColor="#E6D8B8" />
-              <stop offset="100%" stopColor="#231915" />
-            </linearGradient>
-          </defs>
+          a référence
+        </text>
 
-          {/* 1. TRAVERSE HORIZONTALE SUPÉRIEURE DU GRAND "T" */}
-          <path
-            d={`M 4 16
-                L 12 10
-                L 52 10
-                L ${dotX - 6} 12
-                L ${dotX + 4} 16
-                L ${dotX - 4} 20
-                L 52 21
-                L 12 22
-                Z`}
-            fill="url(#gothicTribalMasterInk)"
-          />
+        <polygon
+          points={`${dotX},50 ${dotX + 3.8},53.8 ${dotX},57.6 ${dotX - 3.8},53.8`}
+          fill="#120C09"
+        />
 
-          <path d="M 4 16 L 13 9 L 13 27 L 7 23 Z" fill="#120C09" />
-          <path d="M 13 22 L 22 22 L 16 28 Z" fill="#231915" />
-
-          <line
-            x1="14"
-            y1="15.5"
-            x2={dotX}
-            y2="16"
-            stroke="url(#bladeEdgeGold)"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-          />
-
-          {/* 2. FÛT VERTICAL FRANC ET IMMÉDIATEMENT LISIBLE DU GRAND "T" */}
-          <path
-            d="M 24 10
-               L 38 10
-               L 38 60
-               L 45 68
-               L 31 71
-               L 17 68
-               L 24 60
-               Z"
-            fill="url(#gothicTribalMasterInk)"
-          />
-
-          <line x1="31" y1="20" x2="31" y2="63" stroke="#E6D8B8" strokeWidth="1.1" />
-          <polygon points="31,29 35,36 31,43 27,36" fill="#E6D8B8" />
-
-          <path d="M 24 32 L 18 36 L 24 40 Z" fill="#231915" />
-          <path d="M 38 32 L 44 36 L 38 40 Z" fill="#231915" />
-
-          <polygon
-            points={`${dotX},13 ${dotX + 4},16 ${dotX},21 ${dotX - 3},16`}
-            fill="#120C09"
-          />
-
-          {/* 3. TEXTE RESSERRÉ "a référence.com" */}
-          <text
-            ref={prefixTextRef}
-            x="50"
-            y="57"
-            fill="#231915"
-            fontFamily="Georgia, 'Times New Roman', serif"
-            fontSize="31"
-            fontWeight="500"
-            letterSpacing="-0.3"
-          >
-            a référence
-          </text>
-
-          <polygon
-            points={`${dotX},50 ${dotX + 3.8},53.8 ${dotX},57.6 ${dotX - 3.8},53.8`}
-            fill="#120C09"
-          />
-
-          <text
-            x={dotX + 6}
-            y="57"
-            fill="#231915"
-            fontFamily="Georgia, 'Times New Roman', serif"
-            fontSize="26"
-            fontWeight="500"
-            letterSpacing="-0.4"
-          >
-            com
-          </text>
-        </svg>
-      </div>
+        <text
+          x={dotX + 6}
+          y="57"
+          fill="#231915"
+          fontFamily="Georgia, 'Times New Roman', serif"
+          fontSize="26"
+          fontWeight="500"
+          letterSpacing="-0.4"
+        >
+          com
+        </text>
+      </svg>
     </button>
   );
 }
 
 // ============================================================================
 // 3. BOUCLIER DE SÉCURITÉ SOUVERAIN & PROTECTION ANTI-BOT / ANTI-HACKER
-// - Invisible pour les visiteurs : aucune mention d'interface admin publique.
-// - Détection d'agents automatisés (webdriver, rafales, honeypot, URL malveillante).
-// - Seul le code @2026 saisi par l'administrateur débloque la gestion interne.
 // ============================================================================
 const MALICIOUS_PATTERNS = [
   /<script\b[^>]*>/i,
@@ -374,7 +360,7 @@ const SovereignSecurityCore = Object.freeze({
     }
     actionRateTracker.failedAdminAttempts += 1;
     if (actionRateTracker.failedAdminAttempts >= 5) {
-      actionRateTracker.lockoutUntil = now + 60000; // Verrouillage 60s anti-brute-force
+      actionRateTracker.lockoutUntil = now + 60000;
     }
     return { allowed: false, locked: actionRateTracker.failedAdminAttempts >= 5 };
   },
@@ -473,7 +459,7 @@ class SafeGuardBoundary extends React.Component {
 }
 
 // ============================================================================
-// 4. COMPOSANT D'ANIMATION FLUIDE AU SCROLL (MOBILE, TABLETTE & DESKTOP)
+// 4. COMPOSANT D'ANIMATION FLUIDE AU SCROLL SANS SAUT VISUEL NI SUPERPOSITION
 // ============================================================================
 function ScrollRevealBox({ children, delay = 0, className = '' }) {
   const ref = useRef(null);
@@ -495,7 +481,7 @@ function ScrollRevealBox({ children, delay = 0, className = '' }) {
           }
         });
       },
-      { threshold: 0.08, rootMargin: '0px 0px -24px 0px' }
+      { threshold: 0.06, rootMargin: '0px 0px -12px 0px' }
     );
     observer.observe(node);
     return () => observer.disconnect();
@@ -507,9 +493,8 @@ function ScrollRevealBox({ children, delay = 0, className = '' }) {
       className={className}
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translate3d(0, 0, 0) scale(1)' : 'translate3d(0, 22px, 0) scale(0.985)',
-        transition: `opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`,
-        willChange: 'opacity, transform'
+        transform: isVisible ? 'translate3d(0, 0, 0)' : 'translate3d(0, 14px, 0)',
+        transition: `opacity 0.52s cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms, transform 0.52s cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms`
       }}
     >
       {children}
@@ -527,7 +512,7 @@ function CatalogVectorEmblem({ categoryId, isActive }) {
 
   if (categoryId === 'Bijouterie') {
     return (
-      <svg viewBox="0 0 48 48" className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 transition-transform duration-500 group-hover:scale-105" fill="none">
+      <svg viewBox="0 0 48 48" className="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 transition-transform duration-300 group-hover:scale-105" fill="none">
         <polygon
           points="17,7 31,7 39,15 39,29 31,37 17,37 9,29 9,15"
           fill={softFill}
@@ -547,7 +532,7 @@ function CatalogVectorEmblem({ categoryId, isActive }) {
 
   if (categoryId === 'Maroquinerie') {
     return (
-      <svg viewBox="0 0 48 48" className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 transition-transform duration-500 group-hover:scale-105" fill="none">
+      <svg viewBox="0 0 48 48" className="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 transition-transform duration-300 group-hover:scale-105" fill="none">
         <rect x="9" y="13" width="26" height="24" rx="5" fill={softFill} stroke={strokeColor} strokeWidth="1.4" />
         <rect x="12" y="16" width="20" height="18" rx="3" stroke={secondaryStroke} strokeWidth="0.9" strokeDasharray="2 1.5" />
         <path d="M35 17c4 0 6 2 6 4.5S39 26 35 26" stroke={strokeColor} strokeWidth="1.5" strokeLinecap="round" />
@@ -558,7 +543,7 @@ function CatalogVectorEmblem({ categoryId, isActive }) {
 
   if (categoryId === 'Quotidien') {
     return (
-      <svg viewBox="0 0 48 48" className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 transition-transform duration-500 group-hover:scale-105" fill="none">
+      <svg viewBox="0 0 48 48" className="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 transition-transform duration-300 group-hover:scale-105" fill="none">
         <path
           d="M8 23c0-8.8 7.2-15 16-15s16 6.2 16 15c-4-2-8-2-16 0-8-2-12-2-16 0z"
           fill={softFill}
@@ -574,7 +559,7 @@ function CatalogVectorEmblem({ categoryId, isActive }) {
 
   if (categoryId === 'CollectionHD') {
     return (
-      <svg viewBox="0 0 48 48" className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 transition-transform duration-500 group-hover:scale-105" fill="none">
+      <svg viewBox="0 0 48 48" className="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 transition-transform duration-300 group-hover:scale-105" fill="none">
         <rect x="7" y="11" width="34" height="26" rx="6" fill={softFill} stroke={strokeColor} strokeWidth="1.4" />
         <circle cx="24" cy="24" r="7.5" stroke={strokeColor} strokeWidth="1.3" />
         <circle cx="24" cy="24" r="3" fill={strokeColor} />
@@ -584,7 +569,7 @@ function CatalogVectorEmblem({ categoryId, isActive }) {
   }
 
   return (
-    <svg viewBox="0 0 48 48" className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 transition-transform duration-500 group-hover:scale-105" fill="none">
+    <svg viewBox="0 0 48 48" className="w-8 h-8 sm:w-9 sm:h-9 flex-shrink-0 transition-transform duration-300 group-hover:scale-105" fill="none">
       <rect x="8" y="8" width="32" height="32" rx="9" fill={softFill} stroke={strokeColor} strokeWidth="1.4" />
       <polygon points="24,13 31,20 31,28 24,35 17,28 17,20" stroke={strokeColor} strokeWidth="1.2" />
       <circle cx="24" cy="24" r="2.5" fill={strokeColor} />
@@ -1635,6 +1620,40 @@ const maskPersonalData = (fullName = '', email = '', cityPostal = '') => {
 
 const INITIAL_ORDERS = [
   {
+    id: 'TR-2026-1104',
+    integrityHash: 'TR-SOV-9A1B-441F',
+    date: '2026-11-09',
+    customer: 'Marc K*****',
+    maskedEmail: 'm***@kin-cabinet.cd',
+    maskedLocation: 'Gombe••• (Protégé)',
+    isGuest: true,
+    itemsSummary: 'Étui Cartes Blindé RFID (Bronze Chocolat) ×1',
+    originAtelier: 'Conception Genève · Mise en écrin requise',
+    destinationZone: 'Commune de la Gombe',
+    deliveryMethod: 'Express Écrin',
+    paymentMethodLabel: 'Mobile Money',
+    amount: 68,
+    paymentStatus: 'Payé',
+    deliveryStatus: 'En préparation'
+  },
+  {
+    id: 'TR-2026-1089',
+    integrityHash: 'TR-SOV-4C1D-720E',
+    date: '2026-11-08',
+    customer: 'Alice M*****',
+    maskedEmail: 'a***@martin.fr',
+    maskedLocation: 'Ngali••• (Protégé)',
+    isGuest: true,
+    itemsSummary: 'Chevalière Octogonale Gravée (Or Pâle) ×1',
+    originAtelier: 'Atelier Joaillier Paris · Écrin scellé',
+    destinationZone: 'Acheminement vers le destinataire',
+    deliveryMethod: 'Express Écrin',
+    paymentMethodLabel: 'Mobile Money',
+    amount: 115,
+    paymentStatus: 'Payé',
+    deliveryStatus: 'En transit'
+  },
+  {
     id: 'TR-2026-1042',
     integrityHash: 'TR-SOV-8F2A-991C',
     date: '2026-11-02',
@@ -1650,23 +1669,6 @@ const INITIAL_ORDERS = [
     amount: 125,
     paymentStatus: 'Payé',
     deliveryStatus: 'Livré'
-  },
-  {
-    id: 'TR-2026-1089',
-    integrityHash: 'TR-SOV-4C1D-720E',
-    date: '2026-11-03',
-    customer: 'Alice M*****',
-    maskedEmail: 'a***@martin.fr',
-    maskedLocation: 'Ngali••• (Protégé)',
-    isGuest: true,
-    itemsSummary: 'Chevalière Octogonale Gravée (Or Pâle) ×1',
-    originAtelier: 'Atelier Joaillier Paris · Écrin scellé',
-    destinationZone: 'Acheminement vers le destinataire',
-    deliveryMethod: 'Express Écrin',
-    paymentMethodLabel: 'Mobile Money',
-    amount: 115,
-    paymentStatus: 'Payé',
-    deliveryStatus: 'En transit'
   }
 ];
 
@@ -1720,14 +1722,16 @@ export default function App() {
 }
 
 function TaReferenceApp() {
-  // Navigation publique : 'shop' (Vitrine) | 'references' (Références & Suivi Trajet) | 'descriptifs' | 'collection' | 'requete'
-  // La vue 'admin' est strictement invisible tant que l'administrateur n'a pas saisi @2026
   const [view, setView] = useState('shop');
   const [selectedCategory, setSelectedCategory] = useState('Toutes');
   const [activeDescriptifProductId, setActiveDescriptifProductId] = useState(PRODUCTS[0].id);
   const [activeCollectionProductId, setActiveCollectionProductId] = useState(PRODUCTS[0].id);
 
-  // Authentification Administrateur invisible du public (déverrouillable via @2026)
+  // Détection de saisie clavier (input/textarea/select) pour replier la barre du bas sur mobile
+  // et éviter toute superposition ou entrave visuelle sur la vitrine et les formulaires.
+  const [isTypingInField, setIsTypingInField] = useState(false);
+
+  // Authentification Administrateur invisible du public (@2026)
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [isSecretPromptOpen, setIsSecretPromptOpen] = useState(false);
   const [secretCodeInput, setSecretCodeInput] = useState('');
@@ -1735,17 +1739,16 @@ function TaReferenceApp() {
   const secretTapCountRef = useRef(0);
   const secretTapTimerRef = useRef(null);
 
-  // Journal interne disponible uniquement lorsque l'administrateur est connecté
   const [blockedThreatsCount, setBlockedThreatsCount] = useState(0);
   const [securityLog, setSecurityLog] = useState([
     {
       id: 'SEC-01',
       time: 'Actif',
-      event: 'Mode furtif activé : Aucune mention ni interface administrateur n’est exposée aux visiteurs.'
+      severity: 'BANAL',
+      event: 'Vérification initiale : Interface administrateur masquée du public.'
     }
   ]);
 
-  // Barre de progression fluide au scroll
   const [scrollProgress, setScrollProgress] = useState(0);
 
   const [cart, setCart] = useState(loadPersistedCart);
@@ -1763,35 +1766,58 @@ function TaReferenceApp() {
 
   const [toast, setToast] = useState(null);
 
-  const recordBlockedThreat = useCallback((reason) => {
+  const recordBlockedThreat = useCallback((reason, severity = 'IMPORTANT') => {
     setBlockedThreatsCount((prev) => prev + 1);
     setSecurityLog((prev) => [
       {
         id: `SEC-${Date.now().toString(36).toUpperCase().slice(-4)}`,
         time: new Date().toLocaleTimeString(),
-        event: `Intention malveillante neutralisée : ${reason}`
+        severity,
+        event: `Intention neutralisée : ${reason}`
       },
       ...prev.slice(0, 14)
     ]);
   }, []);
 
-  // Inspection de l'URL et de l'environnement au chargement (bloque tout lien piégé ou bot)
+  // Repli automatique de la barre mobile dès qu'un champ de texte est touché
+  useEffect(() => {
+    const handleFocusIn = (e) => {
+      const tag = e.target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+        setIsTypingInField(true);
+      }
+    };
+    const handleFocusOut = () => {
+      setTimeout(() => {
+        const activeTag = document.activeElement?.tagName;
+        if (activeTag !== 'INPUT' && activeTag !== 'TEXTAREA' && activeTag !== 'SELECT') {
+          setIsTypingInField(false);
+        }
+      }, 100);
+    };
+    window.addEventListener('focusin', handleFocusIn);
+    window.addEventListener('focusout', handleFocusOut);
+    return () => {
+      window.removeEventListener('focusin', handleFocusIn);
+      window.removeEventListener('focusout', handleFocusOut);
+    };
+  }, []);
+
   useEffect(() => {
     try {
       const currentHref = decodeURIComponent(window.location.href || '');
       if (SovereignSecurityCore.detectMaliciousIntent(currentHref)) {
-        recordBlockedThreat('Paramètre de lien partagé malveillant neutralisé');
+        recordBlockedThreat('Paramètre de lien partagé malveillant neutralisé', 'CRUCIAL');
         window.history.replaceState({}, document.title, window.location.pathname);
       }
       if (SovereignSecurityCore.isBotOrAutomatedAgent()) {
-        recordBlockedThreat('Agent automatisé détecté et confiné en lecture seule');
+        recordBlockedThreat('Agent automatisé détecté et confiné en lecture seule', 'IMPORTANT');
       }
     } catch (e) {
       // Silencieux
     }
   }, [recordBlockedThreat]);
 
-  // Suivi fluide du scroll (Mobile, Tablette & Desktop)
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -1821,7 +1847,7 @@ function TaReferenceApp() {
 
   useEffect(() => {
     if (!toast) return;
-    const timer = setTimeout(() => setToast(null), 4000);
+    const timer = setTimeout(() => setToast(null), 3500);
     return () => clearTimeout(timer);
   }, [toast]);
 
@@ -1841,7 +1867,6 @@ function TaReferenceApp() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isSecretPromptOpen, checkoutModalState.isOpen, isCartOpen]);
 
-  // Déclencheur discret (3 pressions sur le copyright en bas de page) pour ouvrir la saisie du code @2026
   const handleDiscreetCopyrightTap = () => {
     secretTapCountRef.current += 1;
     if (secretTapTimerRef.current) clearTimeout(secretTapTimerRef.current);
@@ -1857,15 +1882,15 @@ function TaReferenceApp() {
     }
   };
 
-  // Déverrouillage direct si l'administrateur tape @2026 dans un champ de recherche (ex: onglet Références)
   const trySilentAdminUnlock = useCallback((rawString) => {
     if (typeof rawString === 'string' && rawString.trim() === SovereignSecurityCore.ADMIN_DEFAULT_CODE) {
       setIsAdminAuthenticated(true);
       setView('admin');
       setToast({
         title: 'Accès Administrateur activé',
-        subtitle: 'Bienvenue dans votre espace de gestion.'
+        subtitle: 'Informations classifiées par ordre de priorité.'
       });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return true;
     }
     return false;
@@ -1874,7 +1899,7 @@ function TaReferenceApp() {
   const handleVerifySecretModal = (e) => {
     e.preventDefault();
     if (SovereignSecurityCore.detectMaliciousIntent(secretCodeInput)) {
-      recordBlockedThreat('Tentative d’injection dans la boîte d’authentification');
+      recordBlockedThreat('Tentative d’injection dans la boîte d’authentification', 'CRUCIAL');
       setSecretError('Accès refusé.');
       setSecretCodeInput('');
       return;
@@ -1888,10 +1913,10 @@ function TaReferenceApp() {
       setView('admin');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (result.locked) {
-      recordBlockedThreat('Verrouillage anti-brute-force déclenché après 5 essais');
+      recordBlockedThreat('Verrouillage anti-brute-force déclenché après 5 essais', 'CRUCIAL');
       setSecretError('Trop de tentatives. Réessayez dans 60 secondes.');
     } else {
-      recordBlockedThreat('Code administrateur erroné');
+      recordBlockedThreat('Code administrateur erroné', 'IMPORTANT');
       setSecretError('Code non reconnu.');
     }
   };
@@ -1912,7 +1937,7 @@ function TaReferenceApp() {
     (product, customVariant, openDrawer = true) => {
       if (!product) return;
       if (!SovereignSecurityCore.checkRateLimit(25)) {
-        recordBlockedThreat('Rafale automatisée sur le panier bloquée');
+        recordBlockedThreat('Rafale automatisée sur le panier bloquée', 'IMPORTANT');
         return;
       }
       const variant = customVariant || selectedVariants[product.id] || product.variants[0];
@@ -2013,7 +2038,7 @@ function TaReferenceApp() {
     honeypotTrap
   }) => {
     if (honeypotTrap && honeypotTrap.length > 0) {
-      recordBlockedThreat('Robot intercepté via champ piège (Honeypot)');
+      recordBlockedThreat('Robot intercepté via champ piège (Honeypot)', 'CRUCIAL');
       return null;
     }
 
@@ -2022,7 +2047,7 @@ function TaReferenceApp() {
       SovereignSecurityCore.detectMaliciousIntent(address) ||
       SovereignSecurityCore.detectMaliciousIntent(cityPostal)
     ) {
-      recordBlockedThreat('Tentative d’injection dans le formulaire de commande');
+      recordBlockedThreat('Tentative d’injection dans le formulaire de commande', 'CRUCIAL');
       return null;
     }
 
@@ -2092,7 +2117,7 @@ function TaReferenceApp() {
 
   const cycleOrderDeliveryStatus = (orderId) => {
     if (!isAdminAuthenticated) {
-      recordBlockedThreat('Modification de statut refusée (session non authentifiée)');
+      recordBlockedThreat('Modification de statut refusée (session non authentifiée)', 'CRUCIAL');
       return;
     }
     setOrders((prev) =>
@@ -2108,7 +2133,6 @@ function TaReferenceApp() {
     );
   };
 
-  // Onglets principaux adaptés Mobile, Tablette et Desktop (sans aucune trace d'Admin pour l'utilisateur)
   const PUBLIC_NAV_TABS = [
     { id: 'shop', label: 'Vitrine', fullLabel: 'La Vitrine' },
     { id: 'references', label: 'Références', fullLabel: 'Références' },
@@ -2117,14 +2141,19 @@ function TaReferenceApp() {
     { id: 'requete', label: 'Requêtes', fullLabel: 'Requêtes' }
   ];
 
+  // Condition d'affichage de la barre mobile : se masque automatiquement si une modale/tiroir est ouvert ou si l'utilisateur saisit du texte
+  const isAnyOverlayOpen = isCartOpen || checkoutModalState.isOpen || isSecretPromptOpen;
+  const hideMobileDock = isAnyOverlayOpen || isTypingInField;
+
   return (
     <div
-      className="min-h-[100dvh] font-sans flex flex-col justify-between relative overflow-x-hidden supple-silk-canvas selection:bg-[#231915] selection:text-[#F6F3EE] pb-20 lg:pb-0"
+      className="min-h-[100dvh] font-sans flex flex-col justify-between relative overflow-x-hidden supple-silk-canvas selection:bg-[#231915] selection:text-[#F6F3EE] pb-24 lg:pb-0"
       style={{ backgroundColor: THEME.silkCanvas, color: THEME.espressoText }}
     >
       <style>{`
         html {
           scroll-behavior: smooth;
+          scroll-padding-top: 112px;
           -webkit-text-size-adjust: 100%;
           -webkit-tap-highlight-color: transparent;
         }
@@ -2132,40 +2161,38 @@ function TaReferenceApp() {
         .supple-silk-canvas {
           background-color: #F6F3EE;
           background-image:
-            radial-gradient(at 15% 10%, rgba(230, 216, 184, 0.36) 0px, transparent 58%),
-            radial-gradient(at 88% 35%, rgba(226, 213, 195, 0.42) 0px, transparent 62%),
+            radial-gradient(at 15% 10%, rgba(230, 216, 184, 0.34) 0px, transparent 58%),
+            radial-gradient(at 88% 35%, rgba(226, 213, 195, 0.40) 0px, transparent 62%),
             linear-gradient(180deg, #F8F5F0 0%, #EFE8DD 52%, #F6F3EE 100%);
         }
 
         .storefront-ribbon {
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.90) 0%, rgba(245, 238, 224, 0.95) 100%);
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(245, 238, 224, 0.96) 100%);
           border: 1px solid rgba(35, 25, 21, 0.09);
-          box-shadow: 0 18px 40px -24px rgba(35, 25, 21, 0.14);
+          box-shadow: 0 12px 32px -20px rgba(35, 25, 21, 0.12);
         }
 
         .white-studio-pedestal {
           background-color: #FFFFFF;
-          border: 1px solid rgba(35, 25, 21, 0.07);
-          box-shadow: 0 14px 34px -20px rgba(35, 25, 21, 0.08);
-          transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease;
+          border: 1px solid rgba(35, 25, 21, 0.08);
+          box-shadow: 0 10px 28px -18px rgba(35, 25, 21, 0.08);
+          transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.38s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
         }
         @media (hover: hover) {
           .white-studio-pedestal:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
             border-color: rgba(35, 25, 21, 0.18);
-            box-shadow: 0 24px 48px -20px rgba(35, 25, 21, 0.14);
+            box-shadow: 0 20px 40px -20px rgba(35, 25, 21, 0.13);
           }
           .white-studio-pedestal:hover .studio-cutout-img {
-            transform: scale(1.06);
-            filter: contrast(1.06) saturate(1.05);
+            transform: scale(1.05);
+            filter: contrast(1.05) saturate(1.04);
           }
         }
 
         .studio-cutout-img {
-          filter: contrast(1.03) saturate(1.02);
-          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s ease;
+          filter: contrast(1.02) saturate(1.02);
+          transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), filter 0.38s ease;
         }
 
         .no-scrollbar::-webkit-scrollbar {
@@ -2177,8 +2204,8 @@ function TaReferenceApp() {
         }
 
         @keyframes cameraScan2D {
-          0%, 100% { transform: translate(-6px, -4px) scale(1); }
-          50% { transform: translate(6px, 4px) scale(1.03); }
+          0%, 100% { transform: translate(-5px, -3px) scale(1); }
+          50% { transform: translate(5px, 3px) scale(1.025); }
         }
         .camera-2d-active {
           animation: cameraScan2D 5.5s ease-in-out infinite;
@@ -2187,7 +2214,7 @@ function TaReferenceApp() {
         @keyframes fadeUpSoft {
           from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(8px);
           }
           to {
             opacity: 1;
@@ -2195,12 +2222,12 @@ function TaReferenceApp() {
           }
         }
         .animate-soft-fade {
-          animation: fadeUpSoft 0.48s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation: fadeUpSoft 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
       `}</style>
 
-      {/* RUBAN FIN DE PROGRESSION DE SCROLL EN HAUT D'ÉCRAN (Mobile, Tablette & Desktop) */}
-      <div className="fixed top-0 left-0 right-0 h-[3px] z-50 pointer-events-none bg-transparent">
+      {/* RUBAN FIN DE PROGRESSION DE SCROLL */}
+      <div className="fixed top-0 left-0 right-0 h-[2.5px] z-50 pointer-events-none bg-transparent">
         <div
           className="h-full transition-all duration-150 ease-out"
           style={{
@@ -2210,23 +2237,30 @@ function TaReferenceApp() {
         />
       </div>
 
-      {/* BANDEAU ADMINISTRATEUR : S'affiche UNIQUEMENT si l'administrateur a entré @2026 */}
+      {/* BANDEAU ADMINISTRATEUR : S'affiche uniquement si @2026 est actif */}
       {isAdminAuthenticated && (
-        <div className="w-full bg-[#171514] text-[#F6F3EE] px-4 py-2 text-[11px] tracking-wider z-40">
+        <div className="w-full bg-[#171514] text-[#F6F3EE] px-4 py-2 text-[11px] tracking-wider z-40 border-b border-white/10">
           <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <ShieldCheck size={13} style={{ color: '#E6D8B8' }} />
               <span>
-                Mode Administrateur Général Actif (<strong className="text-[#E6D8B8]">@2026</strong>) · Menaces bloquées : {blockedThreatsCount}
+                Console Souveraine Active (<strong className="text-[#E6D8B8]">@2026</strong>)
               </span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => setView('admin')}
-                className={`underline ${view === 'admin' ? 'text-white font-semibold' : 'text-[#E6D8B8]'}`}
+                onClick={() => {
+                  setView('admin');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`px-2.5 py-0.5 rounded-full text-[10px] transition-colors ${
+                  view === 'admin'
+                    ? 'bg-[#E6D8B8] text-[#171514] font-semibold'
+                    : 'bg-white/10 text-[#E6D8B8] hover:bg-white/20'
+                }`}
               >
-                Poste de Commandement ({orders.length})
+                Tableau Hiérarchisé ({orders.length})
               </button>
               <button
                 type="button"
@@ -2236,20 +2270,20 @@ function TaReferenceApp() {
                 }}
                 className="px-2.5 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-[10px]"
               >
-                Refermer l’accès Admin
+                Quitter Admin
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Notification discrète */}
-      {toast && (
-        <div className="fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-50 max-w-[90vw] sm:max-w-xs animate-soft-fade">
-          <div className="bg-white/95 backdrop-blur-md border border-[#231915]/12 px-4 py-3 rounded-2xl shadow-lg flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <span className="w-6 h-6 rounded-full bg-[#231915] text-[#F6F3EE] flex items-center justify-center flex-shrink-0">
-                <Check size={12} />
+      {/* Notification discrète positionnée proprement sans jamais couvrir les boutons actifs */}
+      {toast && !isAnyOverlayOpen && (
+        <div className="fixed top-20 right-4 sm:right-6 z-40 max-w-[88vw] sm:max-w-xs animate-soft-fade pointer-events-auto">
+          <div className="bg-white/98 border border-[#231915]/15 px-4 py-2.5 rounded-2xl shadow-lg flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="w-5 h-5 rounded-full bg-[#231915] text-[#F6F3EE] flex items-center justify-center flex-shrink-0">
+                <Check size={11} />
               </span>
               <div className="min-w-0">
                 <p className="text-xs font-medium text-[#231915] truncate">{toast.title}</p>
@@ -2268,85 +2302,63 @@ function TaReferenceApp() {
         </div>
       )}
 
-      {/* EN-TÊTE ADAPTATIF TOUS FORMATS (Téléphones, Tablettes, Ordinateurs) */}
-      <header className="w-full max-w-6xl mx-auto px-4 sm:px-8 pt-4 sm:pt-6 pb-3 sm:pb-5 sticky top-0 z-30 bg-[#F6F3EE]/88 backdrop-blur-md border-b border-[#231915]/6 transition-all">
-        <div className="flex items-center justify-between gap-3">
-          <GothicTribalBrandMark
-            onClick={() => {
-              setView('shop');
-              setSelectedCategory('Toutes');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
+      {/* EN-TÊTE ARCHITECTURAL COMPACT : Hauteur maîtrisée qui ne recouvre jamais les fenêtres de la vitrine */}
+      <header className="w-full sticky top-0 z-30 bg-[#F6F3EE]/95 backdrop-blur-md border-b border-[#231915]/8 transition-all">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-2.5 sm:py-3.5">
+          <div className="flex items-center justify-between gap-3">
+            <GothicTribalBrandMark
+              onClick={() => {
+                setView('shop');
+                setSelectedCategory('Toutes');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
 
-          {/* Navigation Desktop & Tablette Paysage */}
-          <nav className="hidden lg:flex items-center gap-5 xl:gap-7 text-xs tracking-wider uppercase text-[#6E5D53]">
-            {PUBLIC_NAV_TABS.map((tab) => {
-              const active = view === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => {
-                    setView(tab.id);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className={`py-1.5 transition-all whitespace-nowrap ${
-                    active
-                      ? 'text-[#231915] font-semibold border-b-2 border-[#231915]'
-                      : 'hover:text-[#231915]'
-                  }`}
-                >
-                  {tab.fullLabel}
-                </button>
-              );
-            })}
-          </nav>
+            {/* Navigation Desktop & Tablette */}
+            <nav className="hidden lg:flex items-center gap-5 xl:gap-7 text-xs tracking-wider uppercase text-[#6E5D53]">
+              {PUBLIC_NAV_TABS.map((tab) => {
+                const active = view === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      setView(tab.id);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className={`py-1.5 transition-all whitespace-nowrap ${
+                      active
+                        ? 'text-[#231915] font-semibold border-b-2 border-[#231915]'
+                        : 'hover:text-[#231915]'
+                    }`}
+                  >
+                    {tab.fullLabel}
+                  </button>
+                );
+              })}
+            </nav>
 
-          {/* Bouton Panier ergonomique calibré pour le pouce sur mobile */}
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setIsCartOpen(true)}
-              className="min-h-[42px] px-3.5 sm:px-4 py-2 rounded-full text-xs font-medium bg-[#231915] text-[#F6F3EE] hover:bg-[#382923] active:scale-95 transition-all flex items-center gap-2 shadow-xs"
-              aria-label="Panier"
-            >
-              <ShoppingBag size={15} />
-              <span className="hidden xs:inline">Panier</span>
-              <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-[#E6D8B8] text-[#231915] font-semibold leading-none">
-                {cartCount}
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {/* Barre d'onglets fluide horizontale pour Tablettes & Smartphones */}
-        <div className="flex lg:hidden items-center gap-1.5 overflow-x-auto no-scrollbar pt-3 pb-0.5 -mx-1 px-1">
-          {PUBLIC_NAV_TABS.map((tab) => {
-            const active = view === tab.id;
-            return (
+            {/* Bouton Panier */}
+            <div className="flex items-center gap-2">
               <button
-                key={tab.id}
                 type="button"
-                onClick={() => {
-                  setView(tab.id);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className={`min-h-[36px] px-3.5 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-all active:scale-95 ${
-                  active
-                    ? 'bg-[#231915] text-[#F6F3EE] shadow-xs'
-                    : 'bg-white/85 text-[#6E5D53] border border-[#231915]/10'
-                }`}
+                onClick={() => setIsCartOpen(true)}
+                className="min-h-[38px] sm:min-h-[40px] px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-medium bg-[#231915] text-[#F6F3EE] hover:bg-[#382923] active:scale-95 transition-all flex items-center gap-2 shadow-xs"
+                aria-label="Panier"
               >
-                {tab.fullLabel}
+                <ShoppingBag size={14} />
+                <span className="hidden xs:inline">Panier</span>
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-[#E6D8B8] text-[#231915] font-semibold leading-none">
+                  {cartCount}
+                </span>
               </button>
-            );
-          })}
+            </div>
+          </div>
         </div>
       </header>
 
-      {/* CONTENU PRINCIPAL */}
-      <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 flex-1 flex flex-col gap-8 sm:gap-10">
+      {/* ZONE PRINCIPALE AVEC MARGE SUPÉRIEURE DÉDIÉE (Aucune superposition possible avec l'en-tête) */}
+      <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-5 sm:pt-7 pb-8 flex-1 flex flex-col gap-7 sm:gap-9 relative z-10">
         {view === 'shop' && (
           <VitrineView
             selectedCategory={selectedCategory}
@@ -2438,10 +2450,14 @@ function TaReferenceApp() {
         )}
       </main>
 
-      {/* DOCK TACTILE BAS D'ÉCRAN POUR SMARTPHONES & TABLETTES PORTRAIT */}
+      {/* BARRE DES TÂCHES MOBILE AUTO-REPLIABLE :
+          Se replie automatiquement dès que l'utilisateur saisit du texte ou ouvre une fenêtre
+          afin de ne jamais entraver la vitrine ni superposer les fenêtres */}
       <nav
-        aria-label="Navigation rapide mobile"
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#231915]/10 px-2 py-1.5 flex items-center justify-around shadow-lg"
+        aria-label="Barre de navigation mobile"
+        className={`lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/96 backdrop-blur-md border-t border-[#231915]/10 px-2 py-1.5 flex items-center justify-around shadow-lg transition-transform duration-300 ease-out ${
+          hideMobileDock ? 'translate-y-full pointer-events-none opacity-0' : 'translate-y-0 opacity-100'
+        }`}
         style={{ paddingBottom: 'max(0.35rem, env(safe-area-inset-bottom))' }}
       >
         {[
@@ -2467,7 +2483,7 @@ function TaReferenceApp() {
             >
               <span
                 className={`p-1 rounded-full transition-colors ${
-                  active ? 'bg-[#E6D8B8]/60 text-[#231915]' : ''
+                  active ? 'bg-[#E6D8B8]/65 text-[#231915]' : ''
                 }`}
               >
                 <IconComp size={15} />
@@ -2478,8 +2494,8 @@ function TaReferenceApp() {
         })}
       </nav>
 
-      {/* PIED DE PAGE ÉPURÉ (Sans aucune mention d'Admin visible ; 3 clics sur Ta référence.com ouvrent l'accès @2026) */}
-      <footer className="w-full max-w-6xl mx-auto px-4 sm:px-8 py-10 mt-6">
+      {/* PIED DE PAGE ÉPURÉ */}
+      <footer className="w-full max-w-6xl mx-auto px-4 sm:px-8 py-8 mt-4">
         <div className="border-t border-[#231915]/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#6E5D53]">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6">
             <button
@@ -2538,7 +2554,7 @@ function TaReferenceApp() {
       {isSecretPromptOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
-            className="fixed inset-0 bg-[#231915]/40 backdrop-blur-xs"
+            className="fixed inset-0 bg-[#231915]/45 backdrop-blur-xs"
             onClick={() => setIsSecretPromptOpen(false)}
           />
           <div className="relative w-full max-w-xs bg-white rounded-3xl p-6 border border-[#231915]/15 shadow-2xl z-10 space-y-4 animate-soft-fade">
@@ -2581,7 +2597,7 @@ function TaReferenceApp() {
       {isCartOpen && (
         <div className="fixed inset-0 z-50 flex justify-end">
           <div
-            className="fixed inset-0 bg-[#231915]/35 backdrop-blur-xs"
+            className="fixed inset-0 bg-[#231915]/40 backdrop-blur-xs"
             onClick={() => setIsCartOpen(false)}
           />
           <aside className="relative w-full max-w-md bg-white h-full shadow-2xl border-l border-[#231915]/10 z-10 flex flex-col justify-between p-5 sm:p-6">
@@ -2700,7 +2716,7 @@ function TaReferenceApp() {
 }
 
 // ============================================================================
-// 10. VUE VITRINE : ADAPTÉE MOBILE, TABLETTE & DESKTOP AVEC SCROLL FLUIDE
+// 10. VUE VITRINE : FLUX HARMONIEUX SANS SUPERPOSITION DE FENÊTRES
 // ============================================================================
 function VitrineView({
   selectedCategory,
@@ -2719,84 +2735,83 @@ function VitrineView({
       : PRODUCTS.filter((p) => p.category === selectedCategory);
 
   return (
-    <div className="space-y-7 sm:space-y-10">
+    <div className="space-y-6 sm:space-y-8 animate-soft-fade">
       {/* DEVANTURE FLUIDE DES CATALOGUES */}
-      <ScrollRevealBox>
-        <section className="storefront-ribbon rounded-3xl p-4 sm:p-6">
-          <div className="flex flex-col gap-4 sm:gap-5">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-              <div>
-                <span className="text-[10px] uppercase tracking-[0.24em] text-[#6E5D53] block">
-                  Sélection & Références Certifiées
-                </span>
-                <h1 className="font-serif text-xl sm:text-3xl text-[#231915] tracking-tight mt-0.5">
-                  L’essentiel bien choisi.
-                </h1>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={onOpenReferences}
-                  className="px-3.5 py-2 rounded-full text-[11px] sm:text-xs font-medium border border-[#231915]/15 bg-white text-[#231915] hover:bg-[#E6D8B8]/40 transition-colors flex items-center gap-1.5"
-                >
-                  <CompassIcon size={13} />
-                  <span>Index des Références & Suivi</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory('CollectionHD')}
-                  className="px-3.5 py-2 rounded-full text-[11px] sm:text-xs font-medium bg-[#231915] text-[#F6F3EE] hover:bg-[#382923] transition-colors flex items-center gap-1.5"
-                >
-                  <CameraIcon size={13} />
-                  <span>Collection HD 2D/3D →</span>
-                </button>
-              </div>
+      <section className="storefront-ribbon rounded-3xl p-4 sm:p-6">
+        <div className="flex flex-col gap-4 sm:gap-5">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.24em] text-[#6E5D53] block">
+                Sélection & Références Certifiées
+              </span>
+              <h1 className="font-serif text-xl sm:text-3xl text-[#231915] tracking-tight mt-0.5">
+                L’essentiel bien choisi.
+              </h1>
             </div>
-
-            {/* Ruban des catégories : défilement fluide au doigt sur téléphone, grille sur tablette/desktop */}
-            <div className="flex sm:grid sm:grid-cols-3 lg:grid-cols-5 gap-2.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0 -mx-1 px-1">
-              {CATALOG_RIBBON_ITEMS.map((cat) => {
-                const isActive = selectedCategory === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`group flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-2xl text-left transition-all flex-shrink-0 w-[168px] sm:w-auto active:scale-[0.98] ${
-                      isActive
-                        ? 'bg-[#231915] text-[#F6F3EE] shadow-md'
-                        : 'bg-white/90 hover:bg-white text-[#231915] border border-[#231915]/8'
-                    }`}
-                  >
-                    <CatalogVectorEmblem categoryId={cat.id} isActive={isActive} />
-                    <div className="min-w-0">
-                      <span className="text-xs font-medium block truncate">{cat.label}</span>
-                      <span
-                        className={`text-[10px] block truncate ${
-                          isActive ? 'text-[#E6D8B8]' : 'text-[#6E5D53]'
-                        }`}
-                      >
-                        {cat.subtitle}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={onOpenReferences}
+                className="px-3.5 py-2 rounded-full text-[11px] sm:text-xs font-medium border border-[#231915]/15 bg-white text-[#231915] hover:bg-[#E6D8B8]/40 transition-colors flex items-center gap-1.5"
+              >
+                <CompassIcon size={13} />
+                <span>Références & Suivi</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedCategory('CollectionHD')}
+                className="px-3.5 py-2 rounded-full text-[11px] sm:text-xs font-medium bg-[#231915] text-[#F6F3EE] hover:bg-[#382923] transition-colors flex items-center gap-1.5"
+              >
+                <CameraIcon size={13} />
+                <span>Collection HD 2D/3D →</span>
+              </button>
             </div>
           </div>
-        </section>
-      </ScrollRevealBox>
 
-      {/* GRILLE VITRINE : ADAPTATIVE (1 col Mobile, 2 cols Tablette, 3 cols Desktop) */}
+          <div className="flex sm:grid sm:grid-cols-3 lg:grid-cols-5 gap-2.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0 -mx-1 px-1">
+            {CATALOG_RIBBON_ITEMS.map((cat) => {
+              const isActive = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`group flex items-center gap-2.5 p-2.5 sm:p-3 rounded-2xl text-left transition-all flex-shrink-0 w-[164px] sm:w-auto active:scale-[0.98] ${
+                    isActive
+                      ? 'bg-[#231915] text-[#F6F3EE] shadow-sm'
+                      : 'bg-white/95 hover:bg-white text-[#231915] border border-[#231915]/10'
+                  }`}
+                >
+                  <CatalogVectorEmblem categoryId={cat.id} isActive={isActive} />
+                  <div className="min-w-0">
+                    <span className="text-xs font-medium block truncate">{cat.label}</span>
+                    <span
+                      className={`text-[10px] block truncate ${
+                        isActive ? 'text-[#E6D8B8]' : 'text-[#6E5D53]'
+                      }`}
+                    >
+                      {cat.subtitle}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* GRILLE VITRINE BIEN ESPACÉE ET ALIGNÉE */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
         {filteredProducts.map((product, index) => {
           const currentVariant = selectedVariants[product.id] || product.variants[0];
           return (
-            <ScrollRevealBox key={product.id} delay={(index % 3) * 60}>
+            <ScrollRevealBox key={product.id} delay={(index % 3) * 50}>
               <article className="white-studio-pedestal rounded-3xl p-4 sm:p-5 h-full flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between text-[11px] text-[#6E5D53] mb-2">
-                    <span className="font-mono font-medium text-[#231915]">{product.referenceCode} · {product.category}</span>
+                    <span className="font-mono font-medium text-[#231915]">
+                      {product.referenceCode} · {product.category}
+                    </span>
                     <div className="flex items-center gap-2.5">
                       <button
                         type="button"
@@ -2815,10 +2830,10 @@ function VitrineView({
                     </div>
                   </div>
 
-                  {/* Fenêtre Studio Blanc Pur (#FFFFFF) */}
+                  {/* Fenêtre Studio Blanc Pur (#FFFFFF) isolée */}
                   <div
                     onClick={() => onReadDescriptif(product.id)}
-                    className="w-full h-52 sm:h-56 rounded-2xl bg-white flex items-center justify-center p-3 sm:p-4 cursor-pointer overflow-hidden"
+                    className="w-full h-52 sm:h-56 rounded-2xl bg-white flex items-center justify-center p-3 sm:p-4 cursor-pointer overflow-hidden border border-[#231915]/5"
                   >
                     <div className="w-40 h-40 sm:w-44 sm:h-44 studio-cutout-img">
                       {product.render3DLayers(currentVariant)}
@@ -2826,9 +2841,9 @@ function VitrineView({
                   </div>
 
                   <div className="mt-3.5 flex items-baseline justify-between gap-2">
-                    <div>
-                      <h2 className="font-serif text-base text-[#231915]">{product.name}</h2>
-                      <p className="text-xs text-[#6E5D53] mt-0.5">{product.shortNote}</p>
+                    <div className="min-w-0">
+                      <h2 className="font-serif text-base text-[#231915] truncate">{product.name}</h2>
+                      <p className="text-xs text-[#6E5D53] mt-0.5 truncate">{product.shortNote}</p>
                     </div>
                     <span className="font-serif text-base font-semibold text-[#231915] whitespace-nowrap">
                       {product.price} $
@@ -2893,16 +2908,11 @@ function VitrineView({
 
 // ============================================================================
 // 11. ONGLET RÉFÉRENCES & SUIVI DU TRAJET CLIENT
-// Réintègre l'onglet Références demandé :
-// 1) Suivi client de sa transaction et du trajet de la pièce (de l'atelier où
-//    elle est entretenue jusqu'au domicile du client, sans exposer le backend).
-// 2) Répertoire complet et filtrable des codes REF-01 à REF-12.
 // ============================================================================
 function ReferencesAndTrackingView({
   orders,
   lastClientOrderId,
   selectedVariants,
-  setSelectedVariants,
   addToCart,
   onReadDescriptif,
   onOpenCollectionHD,
@@ -2955,209 +2965,203 @@ function ReferencesAndTrackingView({
     : 0;
 
   return (
-    <div className="space-y-8">
-      {/* SECTION 1 : SUIVI PERSONNEL DU TRAJET DU PRODUIT (Côté Utilisateur uniquement) */}
-      <ScrollRevealBox>
-        <section className="bg-white rounded-3xl p-5 sm:p-8 border border-[#231915]/10 shadow-xs space-y-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#231915]/10 pb-5">
-            <div>
-              <span className="text-[10px] uppercase tracking-[0.22em] text-[#6E5D53] block">
-                Traçabilité Client & Souci du Détail
-              </span>
-              <h1 className="font-serif text-2xl sm:text-3xl text-[#231915] mt-1">
-                Références & Suivi d’Acheminement
-              </h1>
-              <p className="text-xs text-[#6E5D53] mt-1">
-                Suivez votre transaction et le trajet exact de votre pièce, de l’atelier où elle est préparée jusqu’à votre adresse.
-              </p>
-            </div>
-
-            <form onSubmit={handleTrackSubmit} className="flex items-center gap-2 w-full md:w-auto">
-              <input
-                type="text"
-                value={trackingCodeInput}
-                onChange={(e) => setTrackingCodeInput(e.target.value)}
-                placeholder="N° de commande (ex: TR-2026-1089)"
-                className="flex-1 md:w-56 px-4 py-2.5 rounded-full border border-[#231915]/15 bg-[#F6F3EE]/60 text-xs font-mono focus:outline-none focus:border-[#231915]"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2.5 rounded-full text-xs font-medium bg-[#231915] text-[#F6F3EE] hover:bg-[#382923] whitespace-nowrap"
-              >
-                Suivre le trajet
-              </button>
-            </form>
+    <div className="space-y-7 animate-soft-fade">
+      {/* SECTION 1 : SUIVI PERSONNEL DU TRAJET DU PRODUIT */}
+      <section className="bg-white rounded-3xl p-5 sm:p-8 border border-[#231915]/10 shadow-xs space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#231915]/10 pb-5">
+          <div>
+            <span className="text-[10px] uppercase tracking-[0.22em] text-[#6E5D53] block">
+              Traçabilité Client & Souci du Détail
+            </span>
+            <h1 className="font-serif text-2xl sm:text-3xl text-[#231915] mt-1">
+              Références & Suivi d’Acheminement
+            </h1>
+            <p className="text-xs text-[#6E5D53] mt-1">
+              Suivez votre transaction et le trajet exact de votre pièce, de l’atelier où elle est préparée jusqu’à votre adresse.
+            </p>
           </div>
 
-          {trackedOrder ? (
-            <div className="space-y-5">
-              <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-[#F6F3EE]/70 text-xs">
-                <div>
-                  <span className="text-[10px] uppercase tracking-widest text-[#6E5D53] block">
-                    Transaction vérifiée · {trackedOrder.date}
-                  </span>
-                  <span className="font-mono font-semibold text-sm text-[#231915]">
-                    {trackedOrder.id}
-                  </span>
-                  <span className="text-[#6E5D53] ml-2">· {trackedOrder.itemsSummary}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-full bg-white border border-[#231915]/10 text-[11px] font-medium">
-                    {trackedOrder.paymentStatus} ({trackedOrder.amount} $)
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-[#231915] text-[#F6F3EE] text-[11px] font-medium">
-                    {trackedOrder.deliveryStatus}
-                  </span>
-                </div>
-              </div>
+          <form onSubmit={handleTrackSubmit} className="flex items-center gap-2 w-full md:w-auto">
+            <input
+              type="text"
+              value={trackingCodeInput}
+              onChange={(e) => setTrackingCodeInput(e.target.value)}
+              placeholder="N° de commande (ex: TR-2026-1089)"
+              className="flex-1 md:w-56 px-4 py-2.5 rounded-full border border-[#231915]/15 bg-[#F6F3EE]/60 text-xs font-mono focus:outline-none focus:border-[#231915]"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2.5 rounded-full text-xs font-medium bg-[#231915] text-[#F6F3EE] hover:bg-[#382923] whitespace-nowrap"
+            >
+              Suivre le trajet
+            </button>
+          </form>
+        </div>
 
-              {/* Frise visuelle en 4 étapes : De l'atelier d'entretien jusqu'au client */}
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                {[
-                  {
-                    step: '01 · Atelier & Entretien',
-                    title: 'Contrôle & Polissage',
-                    detail: trackedOrder.originAtelier || 'Inspection minutieuse des finitions en atelier.',
-                    done: true
-                  },
-                  {
-                    step: '02 · Écrin & Sceau',
-                    title: 'Mise en Écrin',
-                    detail: `Préparation ${trackedOrder.deliveryMethod} et scellement de protection.`,
-                    done: currentStepIndex >= 0
-                  },
-                  {
-                    step: '03 · Acheminement',
-                    title: 'En Transit Sécurisé',
-                    detail: 'Transport dédié avec suivi jusqu’à votre commune de remise.',
-                    done: currentStepIndex >= 1
-                  },
-                  {
-                    step: '04 · Remise Finale',
-                    title: 'Livré entre vos mains',
-                    detail: `Destination : ${trackedOrder.destinationZone || 'Votre adresse de livraison'}.`,
-                    done: currentStepIndex >= 2
-                  }
-                ].map((stage, idx) => (
-                  <div
-                    key={stage.step}
-                    className={`p-4 rounded-2xl border transition-all ${
-                      stage.done
-                        ? 'bg-[#F6F3EE]/90 border-[#231915]/20 text-[#231915]'
-                        : 'bg-white border-[#231915]/8 text-[#6E5D53] opacity-65'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-[#6E5D53]">
-                      <span>{stage.step}</span>
-                      {stage.done ? (
-                        <span className="w-4 h-4 rounded-full bg-[#231915] text-[#F6F3EE] flex items-center justify-center">
-                          <Check size={10} />
-                        </span>
-                      ) : (
-                        <TruckIcon size={12} />
-                      )}
-                    </div>
-                    <p className="font-serif text-sm font-medium mt-1.5">{stage.title}</p>
-                    <p className="text-[11px] text-[#6E5D53] mt-1 leading-relaxed">{stage.detail}</p>
-                  </div>
-                ))}
+        {trackedOrder ? (
+          <div className="space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-[#F6F3EE]/70 text-xs">
+              <div>
+                <span className="text-[10px] uppercase tracking-widest text-[#6E5D53] block">
+                  Transaction vérifiée · {trackedOrder.date}
+                </span>
+                <span className="font-mono font-semibold text-sm text-[#231915]">
+                  {trackedOrder.id}
+                </span>
+                <span className="text-[#6E5D53] ml-2">· {trackedOrder.itemsSummary}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-full bg-white border border-[#231915]/10 text-[11px] font-medium">
+                  {trackedOrder.paymentStatus} ({trackedOrder.amount} $)
+                </span>
+                <span className="px-3 py-1 rounded-full bg-[#231915] text-[#F6F3EE] text-[11px] font-medium">
+                  {trackedOrder.deliveryStatus}
+                </span>
               </div>
             </div>
-          ) : (
-            <p className="text-xs text-[#6E5D53] py-2">
-              Aucune transaction trouvée pour ce numéro. Vérifiez le code reçu lors de votre confirmation (ex: <code className="font-mono text-[#231915]">TR-2026-1089</code>).
-            </p>
-          )}
-        </section>
-      </ScrollRevealBox>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              {[
+                {
+                  step: '01 · Atelier & Entretien',
+                  title: 'Contrôle & Polissage',
+                  detail: trackedOrder.originAtelier || 'Inspection minutieuse des finitions en atelier.',
+                  done: true
+                },
+                {
+                  step: '02 · Écrin & Sceau',
+                  title: 'Mise en Écrin',
+                  detail: `Préparation ${trackedOrder.deliveryMethod} et scellement de protection.`,
+                  done: currentStepIndex >= 0
+                },
+                {
+                  step: '03 · Acheminement',
+                  title: 'En Transit Sécurisé',
+                  detail: 'Transport dédié avec suivi jusqu’à votre commune de remise.',
+                  done: currentStepIndex >= 1
+                },
+                {
+                  step: '04 · Remise Finale',
+                  title: 'Livré entre vos mains',
+                  detail: `Destination : ${trackedOrder.destinationZone || 'Votre adresse de livraison'}.`,
+                  done: currentStepIndex >= 2
+                }
+              ].map((stage) => (
+                <div
+                  key={stage.step}
+                  className={`p-4 rounded-2xl border transition-all ${
+                    stage.done
+                      ? 'bg-[#F6F3EE]/90 border-[#231915]/20 text-[#231915]'
+                      : 'bg-white border-[#231915]/8 text-[#6E5D53] opacity-65'
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-[#6E5D53]">
+                    <span>{stage.step}</span>
+                    {stage.done ? (
+                      <span className="w-4 h-4 rounded-full bg-[#231915] text-[#F6F3EE] flex items-center justify-center">
+                        <Check size={10} />
+                      </span>
+                    ) : (
+                      <TruckIcon size={12} />
+                    )}
+                  </div>
+                  <p className="font-serif text-sm font-medium mt-1.5">{stage.title}</p>
+                  <p className="text-[11px] text-[#6E5D53] mt-1 leading-relaxed">{stage.detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs text-[#6E5D53] py-2">
+            Aucune transaction trouvée pour ce numéro. Vérifiez le code reçu lors de votre confirmation (ex: <code className="font-mono text-[#231915]">TR-2026-1089</code>).
+          </p>
+        )}
+      </section>
 
       {/* SECTION 2 : INDEX OFFICIEL DES RÉFÉRENCES (REF-01 À REF-12) */}
-      <ScrollRevealBox delay={80}>
-        <section className="bg-white rounded-3xl p-5 sm:p-8 border border-[#231915]/10 shadow-xs space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <span className="text-[10px] uppercase tracking-[0.22em] text-[#6E5D53] block">
-                Nomenclature Officielle · REF-01 à REF-12
-              </span>
-              <h2 className="font-serif text-xl sm:text-2xl text-[#231915] mt-0.5">
-                Répertoire Technique des Références
-              </h2>
-            </div>
-
-            <div className="relative w-full sm:w-72">
-              <SearchIcon
-                size={14}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6E5D53]"
-              />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="Rechercher REF-01, matière, atelier..."
-                className="w-full pl-9 pr-4 py-2.5 rounded-full border border-[#231915]/15 bg-[#F6F3EE]/60 text-xs focus:outline-none focus:border-[#231915]"
-              />
-            </div>
+      <section className="bg-white rounded-3xl p-5 sm:p-8 border border-[#231915]/10 shadow-xs space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span className="text-[10px] uppercase tracking-[0.22em] text-[#6E5D53] block">
+              Nomenclature Officielle · REF-01 à REF-12
+            </span>
+            <h2 className="font-serif text-xl sm:text-2xl text-[#231915] mt-0.5">
+              Répertoire Technique des Références
+            </h2>
           </div>
 
-          {/* Cartes sur Mobile, Tableau structuré sur Tablette/Desktop */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredReferences.map((item) => {
-              const currentVariant = selectedVariants[item.id] || item.variants[0];
-              return (
-                <div
-                  key={item.id}
-                  className="p-4 rounded-2xl border border-[#231915]/10 bg-[#F6F3EE]/40 hover:bg-[#F6F3EE]/80 transition-colors flex items-center gap-4"
-                >
-                  <div
-                    onClick={() => onReadDescriptif(item.id)}
-                    className="w-20 h-20 rounded-2xl bg-white border border-[#231915]/8 p-2 flex-shrink-0 cursor-pointer flex items-center justify-center"
-                  >
-                    {item.render3DLayers(currentVariant)}
-                  </div>
+          <div className="relative w-full sm:w-72">
+            <SearchIcon
+              size={14}
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6E5D53]"
+            />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              placeholder="Rechercher REF-01, matière, atelier..."
+              className="w-full pl-9 pr-4 py-2.5 rounded-full border border-[#231915]/15 bg-[#F6F3EE]/60 text-xs focus:outline-none focus:border-[#231915]"
+            />
+          </div>
+        </div>
 
-                  <div className="flex-1 min-w-0 space-y-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-mono text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#231915] text-[#F6F3EE]">
-                        {item.referenceCode}
-                      </span>
-                      <span className="font-serif text-sm font-semibold text-[#231915]">
-                        {item.price} $
-                      </span>
-                    </div>
-                    <h3 className="font-serif text-sm text-[#231915] truncate">{item.name}</h3>
-                    <p className="text-[11px] text-[#6E5D53] truncate">
-                      {item.specs.materials} · {item.specs.origin}
-                    </p>
-                    <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px]">
-                      <button
-                        type="button"
-                        onClick={() => onReadDescriptif(item.id)}
-                        className="underline text-[#231915] font-medium"
-                      >
-                        Fiche descriptive
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onOpenCollectionHD(item.id)}
-                        className="underline text-[#6E5D53] hover:text-[#231915]"
-                      >
-                        Studio 2D/3D
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => addToCart(item, currentVariant, false)}
-                        className="ml-auto px-3 py-1 rounded-full bg-[#231915] text-[#F6F3EE] text-[10px] font-medium"
-                      >
-                        + Panier
-                      </button>
-                    </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filteredReferences.map((item) => {
+            const currentVariant = selectedVariants[item.id] || item.variants[0];
+            return (
+              <div
+                key={item.id}
+                className="p-4 rounded-2xl border border-[#231915]/10 bg-[#F6F3EE]/40 hover:bg-[#F6F3EE]/80 transition-colors flex items-center gap-4"
+              >
+                <div
+                  onClick={() => onReadDescriptif(item.id)}
+                  className="w-20 h-20 rounded-2xl bg-white border border-[#231915]/8 p-2 flex-shrink-0 cursor-pointer flex items-center justify-center"
+                >
+                  {item.render3DLayers(currentVariant)}
+                </div>
+
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#231915] text-[#F6F3EE]">
+                      {item.referenceCode}
+                    </span>
+                    <span className="font-serif text-sm font-semibold text-[#231915]">
+                      {item.price} $
+                    </span>
+                  </div>
+                  <h3 className="font-serif text-sm text-[#231915] truncate">{item.name}</h3>
+                  <p className="text-[11px] text-[#6E5D53] truncate">
+                    {item.specs.materials} · {item.specs.origin}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px]">
+                    <button
+                      type="button"
+                      onClick={() => onReadDescriptif(item.id)}
+                      className="underline text-[#231915] font-medium"
+                    >
+                      Fiche descriptive
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onOpenCollectionHD(item.id)}
+                      className="underline text-[#6E5D53] hover:text-[#231915]"
+                    >
+                      Studio 2D/3D
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addToCart(item, currentVariant, false)}
+                      className="ml-auto px-3 py-1 rounded-full bg-[#231915] text-[#F6F3EE] text-[10px] font-medium"
+                    >
+                      + Panier
+                    </button>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </section>
-      </ScrollRevealBox>
+              </div>
+            );
+          })}
+        </div>
+      </section>
     </div>
   );
 }
@@ -3234,7 +3238,7 @@ function PresentationCollectionView({
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-soft-fade">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#231915]/10 pb-4 sm:pb-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#231915]/10 pb-4">
         <div>
           <span className="text-[10px] uppercase tracking-[0.24em] text-[#6E5D53] block">
             Ta référence.com · Exposition Photographique Haute Définition
@@ -3261,7 +3265,6 @@ function PresentationCollectionView({
         </div>
       </div>
 
-      {/* Sélecteur rapide tactile des pièces */}
       <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
         {PRODUCTS.map((item) => {
           const isSelected = item.id === activeProduct.id;
@@ -3282,7 +3285,6 @@ function PresentationCollectionView({
         })}
       </div>
 
-      {/* PLATEAU STUDIO BLANC PUR (#FFFFFF) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 bg-white rounded-3xl p-4 sm:p-8 border border-[#231915]/10 shadow-xs">
         <div className="lg:col-span-7 flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#231915]/8 text-xs">
@@ -3328,7 +3330,7 @@ function PresentationCollectionView({
             onMouseLeave={() => setAutoMotion3D(true)}
             onTouchMove={handleStageTouchMove}
             onTouchEnd={() => setAutoMotion3D(true)}
-            className="relative w-full h-[300px] sm:h-[390px] md:h-[420px] rounded-3xl bg-white border border-[#231915]/10 flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
+            className="relative w-full h-[290px] sm:h-[380px] md:h-[410px] rounded-3xl bg-white border border-[#231915]/10 flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing touch-pan-y"
             style={{ perspective: '1100px' }}
           >
             <svg
@@ -3355,7 +3357,7 @@ function PresentationCollectionView({
             </svg>
 
             <div
-              className={`w-60 h-60 sm:w-76 sm:h-76 transition-transform duration-300 ease-out ${
+              className={`w-56 h-56 sm:w-72 sm:h-72 transition-transform duration-300 ease-out ${
                 camera2DMode === 'pan' ? 'camera-2d-active' : ''
               }`}
               style={{
@@ -3371,8 +3373,8 @@ function PresentationCollectionView({
             </div>
 
             {showVectorReference && (
-              <div className="absolute bottom-3 right-3 z-30 bg-white/95 backdrop-blur-md border border-[#231915]/15 rounded-2xl p-2 shadow-md flex items-center gap-2">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white border border-[#231915]/8 p-1">
+              <div className="absolute bottom-3 right-3 z-30 bg-white/95 border border-[#231915]/15 rounded-2xl p-2 shadow-sm flex items-center gap-2">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white border border-[#231915]/8 p-1">
                   {activeProduct.render3DLayers(currentVariant)}
                 </div>
                 <div className="pr-1 hidden xs:block">
@@ -3492,7 +3494,7 @@ function DescriptifsDedicatedPage({
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-soft-fade">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#231915]/10 pb-4 sm:pb-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#231915]/10 pb-4">
         <div>
           <span className="text-[10px] uppercase tracking-[0.24em] text-[#6E5D53] block">
             Ta référence.com · Fiches Techniques & Savoir-Faire
@@ -3649,7 +3651,7 @@ function DescriptifsDedicatedPage({
 }
 
 // ============================================================================
-// 14. VUE REQUÊTES & DEMANDES (AVEC PIÈGE ANTI-BOT HONEYPOT)
+// 14. VUE REQUÊTES & DEMANDES
 // ============================================================================
 function RequeteCompactView({ onNotify, onBlockedThreat, onSilentAdminCode }) {
   const [name, setName] = useState('');
@@ -3661,7 +3663,7 @@ function RequeteCompactView({ onNotify, onBlockedThreat, onSilentAdminCode }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (botHoneypot.length > 0) {
-      onBlockedThreat('Soumission robot bloquée par Honeypot');
+      onBlockedThreat('Soumission robot bloquée par Honeypot', 'CRUCIAL');
       return;
     }
     if (onSilentAdminCode && onSilentAdminCode(details)) {
@@ -3672,7 +3674,7 @@ function RequeteCompactView({ onNotify, onBlockedThreat, onSilentAdminCode }) {
       SovereignSecurityCore.detectMaliciousIntent(name) ||
       SovereignSecurityCore.detectMaliciousIntent(details)
     ) {
-      onBlockedThreat('Requête contenant une charge suspecte bloquée');
+      onBlockedThreat('Requête contenant une charge suspecte bloquée', 'CRUCIAL');
       return;
     }
     const cleanName = SovereignSecurityCore.sanitizeText(name, 60);
@@ -3685,76 +3687,73 @@ function RequeteCompactView({ onNotify, onBlockedThreat, onSilentAdminCode }) {
   };
 
   return (
-    <ScrollRevealBox>
-      <div className="max-w-xl mx-auto w-full bg-white rounded-3xl p-6 sm:p-8 border border-[#231915]/8">
-        <span className="text-[10px] uppercase tracking-[0.22em] text-[#6E5D53] block">
-          Ta référence.com · Guichet de Demandes
-        </span>
-        <h2 className="font-serif text-2xl text-[#231915] mt-1">
-          Soumettre une requête
-        </h2>
-        <p className="text-xs text-[#6E5D53] mt-2 leading-relaxed">
-          Transmettez une demande de gravure personnalisée, une vérification de disponibilité ou une question sur votre acheminement.
-        </p>
+    <div className="max-w-xl mx-auto w-full bg-white rounded-3xl p-6 sm:p-8 border border-[#231915]/8 animate-soft-fade">
+      <span className="text-[10px] uppercase tracking-[0.22em] text-[#6E5D53] block">
+        Ta référence.com · Guichet de Demandes
+      </span>
+      <h2 className="font-serif text-2xl text-[#231915] mt-1">
+        Soumettre une requête
+      </h2>
+      <p className="text-xs text-[#6E5D53] mt-2 leading-relaxed">
+        Transmettez une demande de gravure personnalisée, une vérification de disponibilité ou une question sur votre acheminement.
+      </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-6">
-          {/* Champ Honeypot invisible aux humains pour piéger les bots automatisés */}
-          <input
-            type="text"
-            tabIndex={-1}
-            autoComplete="off"
-            value={botHoneypot}
-            onChange={(e) => setBotHoneypot(e.target.value)}
-            className="hidden"
-            aria-hidden="true"
-          />
+      <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+        <input
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={botHoneypot}
+          onChange={(e) => setBotHoneypot(e.target.value)}
+          className="hidden"
+          aria-hidden="true"
+        />
 
-          <input
-            type="text"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Votre nom complet"
-            className="w-full px-4 py-3 rounded-2xl border border-[#231915]/15 bg-[#F6F3EE]/60 text-xs focus:outline-none focus:border-[#231915]"
-          />
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Votre adresse e-mail"
-            className="w-full px-4 py-3 rounded-2xl border border-[#231915]/15 bg-[#F6F3EE]/60 text-xs focus:outline-none focus:border-[#231915]"
-          />
-          <select
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            className="w-full px-4 py-3 rounded-2xl border border-[#231915]/15 bg-[#F6F3EE]/60 text-xs focus:outline-none focus:border-[#231915]"
-          >
-            <option value="Gravure sur mesure (Chevalière / Miroir)">Gravure sur mesure (Chevalière / Miroir)</option>
-            <option value="Suivi d'une commande invitée">Suivi d’une commande invitée</option>
-            <option value="Demande technique sur une référence">Demande technique sur une référence</option>
-          </select>
-          <textarea
-            rows={3}
-            value={details}
-            onChange={(e) => setDetails(e.target.value)}
-            placeholder="Précisions sur votre demande (optionnel)"
-            className="w-full px-4 py-3 rounded-2xl border border-[#231915]/15 bg-[#F6F3EE]/60 text-xs focus:outline-none focus:border-[#231915]"
-          />
-          <button
-            type="submit"
-            className="w-full py-3.5 rounded-full text-xs font-medium bg-[#231915] text-[#F6F3EE] hover:bg-[#382923] transition-colors"
-          >
-            Transmettre la requête
-          </button>
-        </form>
-      </div>
-    </ScrollRevealBox>
+        <input
+          type="text"
+          required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Votre nom complet"
+          className="w-full px-4 py-3 rounded-2xl border border-[#231915]/15 bg-[#F6F3EE]/60 text-xs focus:outline-none focus:border-[#231915]"
+        />
+        <input
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Votre adresse e-mail"
+          className="w-full px-4 py-3 rounded-2xl border border-[#231915]/15 bg-[#F6F3EE]/60 text-xs focus:outline-none focus:border-[#231915]"
+        />
+        <select
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          className="w-full px-4 py-3 rounded-2xl border border-[#231915]/15 bg-[#F6F3EE]/60 text-xs focus:outline-none focus:border-[#231915]"
+        >
+          <option value="Gravure sur mesure (Chevalière / Miroir)">Gravure sur mesure (Chevalière / Miroir)</option>
+          <option value="Suivi d'une commande invitée">Suivi d’une commande invitée</option>
+          <option value="Demande technique sur une référence">Demande technique sur une référence</option>
+        </select>
+        <textarea
+          rows={3}
+          value={details}
+          onChange={(e) => setDetails(e.target.value)}
+          placeholder="Précisions sur votre demande (optionnel)"
+          className="w-full px-4 py-3 rounded-2xl border border-[#231915]/15 bg-[#F6F3EE]/60 text-xs focus:outline-none focus:border-[#231915]"
+        />
+        <button
+          type="submit"
+          className="w-full py-3.5 rounded-full text-xs font-medium bg-[#231915] text-[#F6F3EE] hover:bg-[#382923] transition-colors"
+        >
+          Transmettre la requête
+        </button>
+      </form>
+    </div>
   );
 }
 
 // ============================================================================
-// 15. MODALE DE COMMANDE INVITÉ (LIMITÉE À LA PARTIE CLIENT & SUIVI TRAJET)
+// 15. MODALE DE COMMANDE INVITÉ
 // ============================================================================
 function GuestCheckoutModal({ items, onClose, onCreateOrder, onTrackOrder }) {
   const [formData, setFormData] = useState({
@@ -3848,7 +3847,7 @@ function GuestCheckoutModal({ items, onClose, onCreateOrder, onTrackOrder }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       <div
-        className="fixed inset-0 bg-[#231915]/40 backdrop-blur-xs"
+        className="fixed inset-0 bg-[#231915]/45 backdrop-blur-xs"
         onClick={() => status !== 'loading' && onClose()}
       />
 
@@ -3897,7 +3896,6 @@ function GuestCheckoutModal({ items, onClose, onCreateOrder, onTrackOrder }) {
 
           {(status === 'idle' || status === 'error') && (
             <form onSubmit={handleSubmitOrder} className="space-y-3.5">
-              {/* Champ piège invisible anti-bot */}
               <input
                 type="text"
                 tabIndex={-1}
@@ -4162,8 +4160,11 @@ function GuestCheckoutModal({ items, onClose, onCreateOrder, onTrackOrder }) {
 }
 
 // ============================================================================
-// 16. ESPACE INTERNE DE L'ADMINISTRATEUR GÉNÉRAL (STRICTEMENT INVISIBLE DU PUBLIC)
-// Ne s'affiche que lorsque le code @2026 a été validé.
+// 16. CONSOLE ADMINISTRATEUR RESTRUCTURÉE EN 4 NIVEAUX DE PRIORITÉ :
+//     1. CRUCIAL   (Finances encaissées, Commandes à expédier, Intégrité critique)
+//     2. IMPORTANT (Expéditions en transit actif, Alertes de sécurité importantes)
+//     3. NORMAL    (Commandes livrées, État du catalogue de 12 références)
+//     4. BANAL     (Diagnostics techniques & journaux mineurs repliables)
 // ============================================================================
 function SovereignAdminView({
   orders,
@@ -4173,143 +4174,353 @@ function SovereignAdminView({
   onCycleStatus,
   onLockAdmin
 }) {
+  const [priorityFilter, setPriorityFilter] = useState('ALL'); // 'ALL' | 'CRUCIAL' | 'IMPORTANT' | 'NORMAL' | 'BANAL'
+  const [showBanalDrawer, setShowBanalDrawer] = useState(false);
   const [testMaliciousPayload, setTestMaliciousPayload] = useState('');
+
+  // Segmentation stricte des données par niveau d'importance
   const totalRevenue = orders.reduce((acc, o) => acc + o.amount, 0);
+  const crucialOrders = orders.filter((o) => o.deliveryStatus === 'En préparation');
+  const importantOrders = orders.filter((o) => o.deliveryStatus === 'En transit');
+  const normalOrders = orders.filter((o) => o.deliveryStatus === 'Livré');
 
   const handleSimulateAttack = () => {
     const sample = testMaliciousPayload || '<script>DROP TABLE orders;</script>';
     if (SovereignSecurityCore.detectMaliciousIntent(sample)) {
-      onBlockedThreat(`Charge hostile interceptée ("${sample.slice(0, 28)}...")`);
+      onBlockedThreat(`Charge hostile interceptée ("${sample.slice(0, 28)}...")`, 'CRUCIAL');
       setTestMaliciousPayload('');
     }
   };
 
+  const PRIORITY_TABS = [
+    { id: 'ALL', label: 'Vue Synthétique Complète', badge: '4 Niveaux' },
+    { id: 'CRUCIAL', label: '1 · Crucial', badge: `${crucialOrders.length} à expédier` },
+    { id: 'IMPORTANT', label: '2 · Important', badge: `${importantOrders.length} en transit` },
+    { id: 'NORMAL', label: '3 · Normal', badge: `${normalOrders.length} livrées` },
+    { id: 'BANAL', label: '4 · Banal', badge: `${securityLog.length} logs` }
+  ];
+
+  const shouldShow = (tier) => priorityFilter === 'ALL' || priorityFilter === tier;
+
   return (
     <div className="space-y-6 animate-soft-fade">
-      <div className="bg-white rounded-3xl p-5 sm:p-8 border border-[#231915]/10 space-y-5">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#231915]/10 pb-5">
+      {/* EN-TÊTE ET BARRE DE FILTRAGE PAR NIVEAU D'IMPORTANCE */}
+      <div className="bg-white rounded-3xl p-5 sm:p-7 border border-[#231915]/12 shadow-xs space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#231915]/10 pb-4">
           <div>
             <span className="text-[10px] uppercase tracking-[0.22em] text-[#6E5D53] block">
-              Console Souveraine Invisible du Public · Authentifiée (@2026)
+              Poste de Commandement Structuré · Accès Souverain (@2026)
             </span>
-            <h2 className="font-serif text-2xl text-[#231915] mt-1">
-              Administration Générale Ta référence.com
-            </h2>
+            <h1 className="font-serif text-xl sm:text-2xl text-[#231915] mt-0.5">
+              Classification par Ordre de Priorité
+            </h1>
           </div>
 
           <button
             type="button"
             onClick={onLockAdmin}
-            className="px-4 py-2 rounded-full text-xs font-medium bg-[#171514] text-[#E6D8B8] hover:opacity-90"
+            className="px-4 py-2 rounded-full text-xs font-medium bg-[#171514] text-[#E6D8B8] hover:opacity-90 transition-opacity"
           >
-            Quitter & Masquer l’Administration
+            Verrouiller & Quitter
           </button>
         </div>
 
-        <div className="p-4 rounded-2xl border border-[#231915]/12 bg-[#F6F3EE]/40 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
-          <div>
-            <span className="font-medium text-[#231915] block">
-              Pare-feu Anti-Intrusion & Anti-Bot Actif
-            </span>
+        {/* Sélecteur des 4 niveaux : Crucial / Important / Normal / Banal */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          {PRIORITY_TABS.map((tab) => {
+            const active = priorityFilter === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  setPriorityFilter(tab.id);
+                  if (tab.id === 'BANAL') setShowBanalDrawer(true);
+                }}
+                className={`px-3.5 py-2 rounded-2xl text-xs font-medium whitespace-nowrap transition-all flex items-center gap-2 border ${
+                  active
+                    ? 'bg-[#231915] text-[#F6F3EE] border-[#231915]'
+                    : 'bg-[#F6F3EE]/70 text-[#231915] border-[#231915]/10 hover:bg-[#E6D8B8]/40'
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] ${
+                    active ? 'bg-[#E6D8B8] text-[#231915] font-semibold' : 'bg-white text-[#6E5D53]'
+                  }`}
+                >
+                  {tab.badge}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* =====================================================================
+          NIVEAU 1 : CRUCIAL (Ce qui exige votre attention immédiate)
+          ===================================================================== */}
+      {shouldShow('CRUCIAL') && (
+        <section className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-[#231915] shadow-xs space-y-5">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#231915]/10 pb-3">
+            <div className="flex items-center gap-2.5">
+              <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-[#231915] text-[#E6D8B8]">
+                Niveau 1 · Crucial
+              </span>
+              <h2 className="font-serif text-lg sm:text-xl text-[#231915]">
+                Trésorerie, Commandes à Expédier & Intégrité
+              </h2>
+            </div>
             <span className="text-[11px] text-[#6E5D53]">
-              Les visiteurs n’ont aucune visibilité sur cette console, même via un lien partagé.
+              Priorité absolue · Action immédiate requise
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={testMaliciousPayload}
-              onChange={(e) => setTestMaliciousPayload(e.target.value)}
-              placeholder="Tester filtre (ex: <script>)"
-              className="px-3 py-2 rounded-xl border border-[#231915]/15 bg-white text-xs focus:outline-none"
-            />
-            <button
-              type="button"
-              onClick={handleSimulateAttack}
-              className="px-4 py-2 rounded-xl text-xs font-medium bg-[#231915] text-[#F6F3EE] whitespace-nowrap"
-            >
-              Tester le Bouclier
-            </button>
+
+          {/* 3 Indicateurs Cruciaux */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <div className="p-4 rounded-2xl bg-[#231915] text-[#F6F3EE]">
+              <span className="text-[10px] uppercase tracking-widest text-[#E6D8B8] block">
+                Trésorerie Encaissée
+              </span>
+              <span className="font-serif text-2xl sm:text-3xl font-semibold mt-1 block">
+                {totalRevenue} $
+              </span>
+              <span className="text-[11px] text-[#E6D8B8]/80 mt-1 block">
+                {orders.length} transactions payées et vérifiées
+              </span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F6F3EE] border border-[#231915]/15">
+              <span className="text-[10px] uppercase tracking-widest text-[#6E5D53] block">
+                Commandes à Expédier (Urgent)
+              </span>
+              <span className="font-serif text-2xl sm:text-3xl font-semibold text-[#231915] mt-1 block">
+                {crucialOrders.length}
+              </span>
+              <span className="text-[11px] text-[#6E5D53] mt-1 block">
+                En attente de départ de l’atelier
+              </span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#F6F3EE] border border-[#231915]/15">
+              <span className="text-[10px] uppercase tracking-widest text-[#6E5D53] block">
+                Intégrité du Site
+              </span>
+              <span className="font-serif text-xl font-semibold text-[#231915] mt-1 flex items-center gap-2">
+                <ShieldCheck size={18} />
+                <span>Inviolable</span>
+              </span>
+              <span className="text-[11px] text-[#6E5D53] mt-1 block">
+                {blockedThreatsCount} intrusion(s) neutralisée(s)
+              </span>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white rounded-3xl p-6 border border-[#231915]/8">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-[#6E5D53]">
-            Suivi Interne des Expéditions
-          </p>
-          <h3 className="font-serif text-xl text-[#231915] mt-1">
-            Registre des Commandes ({orders.length})
-          </h3>
-        </div>
-        <div className="text-right">
-          <span className="text-[10px] uppercase tracking-widest text-[#6E5D53] block">
-            Volume Total
-          </span>
-          <span className="font-serif text-xl text-[#231915]">{totalRevenue} $</span>
-        </div>
-      </div>
+          {/* Liste des commandes cruciales ("En préparation") */}
+          <div className="space-y-2.5">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#231915]">
+              Commandes en attente d’expédition ({crucialOrders.length})
+            </h3>
+            {crucialOrders.length === 0 ? (
+              <p className="text-xs text-[#6E5D53] p-3.5 rounded-2xl bg-[#F6F3EE]/60">
+                Aucune commande en attente de préparation. Toutes les urgences ont été traitées.
+              </p>
+            ) : (
+              crucialOrders.map((order) => (
+                <div
+                  key={order.id}
+                  className="p-4 rounded-2xl border border-[#231915]/20 bg-[#F6F3EE]/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                >
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-[#231915]">{order.id}</span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] bg-[#231915] text-[#E6D8B8]">
+                        {order.deliveryMethod}
+                      </span>
+                      <span className="font-semibold text-[#231915]">{order.amount} $</span>
+                    </div>
+                    <p className="text-[#231915] font-medium">{order.itemsSummary}</p>
+                    <p className="text-[11px] text-[#6E5D53]">
+                      Client : {order.customer} ({order.maskedEmail}) · {order.paymentMethodLabel}
+                    </p>
+                  </div>
 
-      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#231915]/8 overflow-x-auto">
-        <table className="w-full text-left border-collapse min-w-[600px] text-xs">
-          <thead>
-            <tr className="border-b border-[#231915]/10 text-[10px] uppercase tracking-wider text-[#6E5D53]">
-              <th className="pb-3 font-medium">Référence</th>
-              <th className="pb-3 font-medium">Client (Anonymisé)</th>
-              <th className="pb-3 font-medium">Pièces</th>
-              <th className="pb-3 font-medium">Montant</th>
-              <th className="pb-3 font-medium">Statut du trajet (Cliquer pour avancer)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order.id} className="border-b border-[#231915]/6">
-                <td className="py-3.5 font-mono font-medium text-[#231915]">{order.id}</td>
-                <td className="py-3.5">
-                  <span className="font-medium text-[#231915]">{order.customer}</span>
-                  <span className="block text-[10px] text-[#6E5D53]">
-                    {order.maskedEmail}
-                  </span>
-                </td>
-                <td className="py-3.5 max-w-xs truncate text-[#6E5D53]">{order.itemsSummary}</td>
-                <td className="py-3.5 font-medium text-[#231915]">{order.amount} $</td>
-                <td className="py-3.5">
                   <button
                     type="button"
                     onClick={() => onCycleStatus(order.id)}
-                    className="px-3 py-1 rounded-full text-[11px] bg-[#F6F3EE] hover:bg-[#E6D8B8]/50 text-[#231915] transition-colors"
+                    className="px-4 py-2 rounded-full text-xs font-medium bg-[#231915] text-[#F6F3EE] hover:bg-[#382923] whitespace-nowrap self-start sm:self-center"
                   >
-                    {order.deliveryStatus} ↻
+                    Passer « En transit » →
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+      )}
 
-      <div className="bg-white rounded-3xl p-6 border border-[#231915]/8 space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-[#231915]">
-            Journal d’Audit du Bouclier Anti-Intrusion
-          </span>
-          <span className="text-[11px] text-[#6E5D53]">
-            {blockedThreatsCount} tentative(s) neutralisée(s)
-          </span>
-        </div>
-        <div className="space-y-1.5 text-xs">
-          {securityLog.map((entry) => (
-            <div
-              key={entry.id}
-              className="px-3.5 py-2 rounded-xl bg-[#F6F3EE]/60 flex items-center justify-between gap-2"
-            >
-              <span className="text-[#231915]">{entry.event}</span>
-              <span className="text-[10px] font-mono text-[#6E5D53]">{entry.time}</span>
+      {/* =====================================================================
+          NIVEAU 2 : IMPORTANT (Suivi opérationnel des colis en route)
+          ===================================================================== */}
+      {shouldShow('IMPORTANT') && (
+        <section className="bg-white rounded-3xl p-5 sm:p-7 border border-[#231915]/20 shadow-xs space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#231915]/10 pb-3">
+            <div className="flex items-center gap-2.5">
+              <span className="px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-widest bg-[#E6D8B8] text-[#231915]">
+                Niveau 2 · Important
+              </span>
+              <h2 className="font-serif text-lg sm:text-xl text-[#231915]">
+                Expéditions en Cours d’Acheminement ({importantOrders.length})
+              </h2>
             </div>
-          ))}
-        </div>
-      </div>
+            <span className="text-[11px] text-[#6E5D53]">
+              Suivi logistique jusqu’à remise au client
+            </span>
+          </div>
+
+          {importantOrders.length === 0 ? (
+            <p className="text-xs text-[#6E5D53] p-3.5 rounded-2xl bg-[#F6F3EE]/50">
+              Aucun colis n’est actuellement en transit.
+            </p>
+          ) : (
+            <div className="space-y-2.5">
+              {importantOrders.map((order) => (
+                <div
+                  key={order.id}
+                  className="p-4 rounded-2xl border border-[#231915]/12 bg-[#F6F3EE]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                >
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-semibold text-[#231915]">{order.id}</span>
+                      <span className="text-[#6E5D53]">· {order.date}</span>
+                      <span className="font-semibold text-[#231915]">{order.amount} $</span>
+                    </div>
+                    <p className="text-[#231915]">{order.itemsSummary}</p>
+                    <p className="text-[11px] text-[#6E5D53]">
+                      Destinataire : {order.customer} · Zone : {order.destinationZone}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => onCycleStatus(order.id)}
+                    className="px-4 py-2 rounded-full text-xs font-medium bg-[#E6D8B8] text-[#231915] hover:bg-[#d8c69e] whitespace-nowrap self-start sm:self-center"
+                  >
+                    Confirmer « Livré » ✓
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* =====================================================================
+          NIVEAU 3 : NORMAL (Commandes déjà livrées & État du catalogue)
+          ===================================================================== */}
+      {shouldShow('NORMAL') && (
+        <section className="bg-white rounded-3xl p-5 sm:p-7 border border-[#231915]/10 shadow-xs space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#231915]/10 pb-3">
+            <div className="flex items-center gap-2.5">
+              <span className="px-2.5 py-1 rounded-md text-[10px] font-medium uppercase tracking-widest bg-[#F6F3EE] text-[#231915] border border-[#231915]/15">
+                Niveau 3 · Normal
+              </span>
+              <h2 className="font-serif text-lg sm:text-xl text-[#231915]">
+                Commandes Clôturées ({normalOrders.length}) & Catalogue Actif ({PRODUCTS.length} Réf.)
+              </h2>
+            </div>
+            <span className="text-[11px] text-[#6E5D53]">
+              Consultation courante
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            {normalOrders.map((order) => (
+              <div
+                key={order.id}
+                className="p-3.5 rounded-2xl bg-[#F6F3EE]/40 border border-[#231915]/8 flex items-center justify-between gap-2"
+              >
+                <div className="min-w-0">
+                  <span className="font-mono font-medium text-[#231915]">{order.id}</span>
+                  <span className="text-[#6E5D53] ml-2">({order.amount} $)</span>
+                  <p className="text-[11px] text-[#6E5D53] truncate mt-0.5">{order.itemsSummary}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onCycleStatus(order.id)}
+                  className="px-2.5 py-1 rounded-full text-[10px] bg-white border border-[#231915]/12 text-[#6E5D53] hover:text-[#231915]"
+                >
+                  Livré ↻
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* =====================================================================
+          NIVEAU 4 : BANAL (Journaux techniques & Tests de filtre — Replié par défaut)
+          ===================================================================== */}
+      {shouldShow('BANAL') && (
+        <section className="bg-white/80 rounded-3xl p-5 sm:p-6 border border-[#231915]/8 space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5">
+              <span className="px-2.5 py-1 rounded-md text-[10px] uppercase tracking-widest bg-[#E8EAED] text-[#6E5D53]">
+                Niveau 4 · Banal
+              </span>
+              <h2 className="font-serif text-base sm:text-lg text-[#6E5D53]">
+                Journaux Techniques & Simulateur de Filtre
+              </h2>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowBanalDrawer((v) => !v)}
+              className="px-3 py-1.5 rounded-full text-[11px] bg-[#F6F3EE] text-[#231915] hover:bg-[#E6D8B8]/40"
+            >
+              {showBanalDrawer ? 'Masquer les détails' : 'Afficher les détails'}
+            </button>
+          </div>
+
+          {(showBanalDrawer || priorityFilter === 'BANAL') && (
+            <div className="space-y-4 pt-3 border-t border-[#231915]/8 text-xs animate-soft-fade">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 p-3.5 rounded-2xl bg-[#F6F3EE]/50">
+                <span className="text-[11px] text-[#6E5D53]">
+                  Tester manuellement le filtre anti-injection :
+                </span>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={testMaliciousPayload}
+                    onChange={(e) => setTestMaliciousPayload(e.target.value)}
+                    placeholder="Ex: <script>"
+                    className="px-3 py-1.5 rounded-xl border border-[#231915]/15 bg-white text-xs focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSimulateAttack}
+                    className="px-3.5 py-1.5 rounded-xl text-xs font-medium bg-[#231915] text-[#F6F3EE]"
+                  >
+                    Tester
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 max-h-44 overflow-y-auto">
+                {securityLog.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="px-3 py-2 rounded-xl bg-[#F6F3EE]/40 flex items-center justify-between gap-2 text-[11px]"
+                  >
+                    <span className="text-[#6E5D53] truncate">{entry.event}</span>
+                    <span className="text-[10px] font-mono text-[#6E5D53] whitespace-nowrap">{entry.time}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 }
