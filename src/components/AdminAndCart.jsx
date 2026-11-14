@@ -1,27 +1,60 @@
 import { useState } from 'react';
 import { sanitizeInput } from '../security/sovereignCore.js';
 
+const ADMIN_TABS = [
+  { id: 'pieces', label: 'Pièces & Photos' },
+  { id: 'catalogues', label: 'Catalogues' },
+  { id: 'messagerie', label: 'Messagerie' }
+];
+const BTN_CREAM = 'click-tactile rounded-xl bg-cream-highlight text-xs font-bold';
+const BTN_SOFT = 'click-tactile rounded-xl bg-latte-soft text-xs font-semibold';
+const INPUT_CLS = 'w-full px-3.5 py-2 rounded-xl border text-sm bg-white';
+
+function getSubTabCls(isActive) {
+  return isActive
+    ? 'bg-cream-highlight font-bold shadow-xs'
+    : 'bg-white/75 text-[#4A2E21] hover:bg-white';
+}
+
 export function UnlockedAdminBanner({ onOpenAdmin, onLock }) {
   const barCls =
-    'bg-cream-highlight px-4 sm:px-8 py-2.5 flex items-center justify-between text-xs';
+    'bg-latte-soft px-4 sm:px-8 py-2 flex items-center justify-between text-xs';
   return (
     <div className={barCls}>
-      <span className="font-semibold">Session Administrateur active</span>
+      <span className="font-semibold text-[#4A2E21]">Atelier actif</span>
       <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={onOpenAdmin}
-          className="px-3 py-1 rounded-lg bg-white/80 font-semibold"
-        >
-          Ouvrir Admin
+        <button type="button" onClick={onOpenAdmin} className={`${BTN_CREAM} px-3 py-1`}>
+          Ouvrir
         </button>
-        <button
-          type="button"
-          onClick={onLock}
-          className="px-3 py-1 rounded-lg bg-[#EFE6D8] font-semibold"
-        >
+        <button type="button" onClick={onLock} className={`${BTN_SOFT} px-3 py-1`}>
           Verrouiller
         </button>
+      </div>
+    </div>
+  );
+}
+
+function ConfirmPurgeModal({ isOpen, onConfirm, onCancel }) {
+  if (!isOpen) {
+    return null;
+  }
+  return (
+    <div className="fixed inset-0 z-50 bg-black/45 grid place-items-center p-4">
+      <div className="card-silk plane-sheen rounded-3xl p-6 max-w-sm w-full space-y-4">
+        <h3 className="font-editorial text-2xl font-bold">
+          Retirer le catalogue par défaut ?
+        </h3>
+        <p className="text-xs text-[#4A2E21]/85">
+          Les pièces initiales seront retirées pour laisser place à vos photos.
+        </p>
+        <div className="flex justify-end gap-2">
+          <button type="button" onClick={onCancel} className={`${BTN_SOFT} px-4 py-2`}>
+            Annuler
+          </button>
+          <button type="button" onClick={onConfirm} className={`${BTN_CREAM} px-4 py-2`}>
+            Confirmer
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -31,54 +64,59 @@ function AddProductForm({ catalogues, onAddProduct }) {
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Bijouterie');
   const [price, setPrice] = useState('120');
+  const [shortDesc, setShortDesc] = useState('');
   const [photos, setPhotos] = useState([]);
 
-  const handleFiles = (event) => {
-    const files = Array.from(event.target.files || []);
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () =>
-        setPhotos((prev) => [...prev, String(reader.result || '')]);
-      reader.readAsDataURL(file);
+  const handleFiles = (e) => {
+    Array.from(e.target.files || []).forEach((f) => {
+      const r = new FileReader();
+      r.onload = () => setPhotos((prev) => [...prev, String(r.result || '')]);
+      r.readAsDataURL(f);
     });
   };
 
-  const handleCreate = (event) => {
-    event.preventDefault();
+  const handleCreate = (e) => {
+    e.preventDefault();
     if (!name.trim()) {
       return;
     }
+    const cleanDesc = sanitizeInput(shortDesc) || 'Finition atelier.';
     onAddProduct({
       id: `REF-${Date.now().toString().slice(-3)}`,
       name: sanitizeInput(name),
       category,
       price: Number(price) || 100,
       atelier: 'Collection Officielle',
-      shortDesc: 'Pièce publiée depuis l’espace Admin.',
-      descriptif: 'Pièce présentée en haute définition.',
+      shortDesc: cleanDesc,
+      descriptif: cleanDesc,
       images: photos,
-      variants: [{ id: 'v1', name: 'Standard', color: '#DECAB1' }]
+      variants: [{ id: 'v1', name: 'Originale', color: '#DECAB1' }]
     });
     setName('');
+    setShortDesc('');
     setPhotos([]);
   };
 
+  const dropCls =
+    'block p-3 rounded-xl bg-[#F6EFE4] border border-dashed ' +
+    'text-xs text-center cursor-pointer';
+
   return (
     <form onSubmit={handleCreate} className="card-silk rounded-3xl p-6 space-y-3">
-      <h2 className="font-serif text-lg font-semibold">Nouvelle Pièce & Photos</h2>
+      <h2 className="font-editorial text-2xl font-bold">Nouvelle Pièce 2D/3D</h2>
       <input
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="Nom du produit"
-        className="w-full px-3.5 py-2 rounded-xl border text-sm"
+        placeholder="Intitulé de la pièce"
+        className={INPUT_CLS}
         required
       />
       <div className="grid grid-cols-2 gap-2">
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="px-3 py-2 rounded-xl border text-sm"
+          className={INPUT_CLS}
         >
           {catalogues
             .filter((c) => c.id !== 'Tous')
@@ -93,251 +131,70 @@ function AddProductForm({ catalogues, onAddProduct }) {
           value={price}
           onChange={(e) => setPrice(e.target.value)}
           placeholder="Prix ($)"
-          className="px-3 py-2 rounded-xl border text-sm"
+          className={INPUT_CLS}
         />
       </div>
       <input
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handleFiles}
-        className="text-xs"
+        type="text"
+        value={shortDesc}
+        onChange={(e) => setShortDesc(e.target.value)}
+        placeholder="Descriptif (matière, dimensions...)"
+        className={INPUT_CLS}
       />
-      <button
-        type="submit"
-        className="w-full py-2.5 rounded-xl bg-cream-highlight text-xs font-semibold"
-      >
-        Publier en Vitrine ({photos.length} photo(s))
+      <label className={dropCls}>
+        <span>Importer photos 2D/3D ({photos.length})</span>
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleFiles}
+          className="hidden"
+        />
+      </label>
+      <button type="submit" className={`${BTN_CREAM} w-full py-2.5`}>
+        Publier en Vitrine
       </button>
     </form>
   );
 }
 
-function MessagesInbox({ messages, productsCount, onReplyMessage }) {
-  const [replyText, setReplyText] = useState('');
-  return (
-    <div className="card-silk rounded-3xl p-6 space-y-3">
-      <h2 className="font-serif text-lg font-semibold">
-        Messages ({messages.length}) · Produits ({productsCount})
-      </h2>
-      {messages.map((msg) => (
-        <div key={msg.id} className="p-3 rounded-xl bg-[#F6EFE4] space-y-2 text-xs">
-          <p className="font-semibold">
-            {msg.sender} — {msg.subject}
-          </p>
-          <p>{msg.body}</p>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              placeholder="Votre réponse..."
-              className="flex-1 px-2.5 py-1.5 rounded-lg border bg-white"
-            />
-            <button
-              type="button"
-              onClick={() => {
-                onReplyMessage(msg.id, sanitizeInput(replyText));
-                setReplyText('');
-              }}
-              className="px-3 py-1.5 rounded-lg bg-cream-highlight font-semibold"
-            >
-              Répondre
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-export function AdminPanel({ adminProps }) {
-  const { products, catalogues, messages, onAddProduct } = adminProps;
-  const { onClearVectorCatalog, onReplyMessage, onLock } = adminProps;
-  const headCls =
-    'bg-cream-highlight rounded-3xl p-6 flex flex-wrap justify-between items-center gap-4';
-
-  return (
-    <section className="space-y-6 pt-4">
-      <div className={headCls}>
-        <h1 className="font-serif text-2xl font-semibold">Espace Administrateur</h1>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={onClearVectorCatalog}
-            className="px-4 py-2 rounded-xl bg-white/85 text-xs font-semibold"
-          >
-            Retirer le catalogue par défaut
-          </button>
-          <button
-            type="button"
-            onClick={onLock}
-            className="px-4 py-2 rounded-xl bg-[#EFE6D8] text-xs font-semibold"
-          >
-            Fermer la session
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <AddProductForm catalogues={catalogues} onAddProduct={onAddProduct} />
-        <MessagesInbox
-          messages={messages}
-          productsCount={products.length}
-          onReplyMessage={onReplyMessage}
-        />
-      </div>
-    </section>
-  );
-}
-
-export function AdminAuthModal({ modalState }) {
-  const { isOpen, code, onChangeCode, onSubmit, onClose } = modalState;
-  if (!isOpen) {
-    return null;
-  }
-  return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-      <form
-        onSubmit={onSubmit}
-        className="card-silk rounded-3xl p-6 max-w-xs w-full space-y-4"
-      >
-        <h3 className="font-serif text-lg font-semibold">Accès</h3>
-        <input
-          type="password"
-          value={code}
-          onChange={(e) => onChangeCode(e.target.value)}
-          placeholder="Code"
-          className="w-full px-3.5 py-2 rounded-xl border text-sm"
-        />
-        <div className="flex justify-end gap-2">
-          <button type="button" onClick={onClose} className="px-3 py-1.5 text-xs">
-            Fermer
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-1.5 rounded-xl bg-cream-highlight text-xs font-semibold"
-          >
-            Valider
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
-export function MessagePopup({ popupState }) {
-  const { isOpen, messages, onSend, onClose } = popupState;
-  const [text, setText] = useState('');
-  if (!isOpen) {
-    return null;
-  }
-
-  const handleSend = (event) => {
-    event.preventDefault();
-    if (!text.trim()) {
+function ExistingProductsList({ products, onUpdatePhoto, onDeleteProduct }) {
+  const handleReplace = (id, e) => {
+    const f = e.target.files?.[0];
+    if (!f) {
       return;
     }
-    onSend(sanitizeInput(text));
-    setText('');
+    const r = new FileReader();
+    r.onload = () => onUpdatePhoto(id, String(r.result || ''));
+    r.readAsDataURL(f);
   };
+  const rowCls =
+    'p-2.5 rounded-2xl bg-[#F6EFE4] flex items-center justify-between gap-2';
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-      <div className="card-silk rounded-3xl p-6 max-w-md w-full space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="font-serif text-lg font-semibold">Messages</h3>
-          <button type="button" onClick={onClose} className="text-xs underline">
-            Fermer
-          </button>
-        </div>
-        <div className="max-h-52 overflow-y-auto space-y-2 text-xs">
-          {messages.map((m) => (
-            <div key={m.id} className="p-3 rounded-xl bg-[#F6EFE4]">
-              <p className="font-semibold">{m.body}</p>
-              {m.reply && (
-                <p className="text-[#5A3826] mt-1">Réponse : {m.reply}</p>
-              )}
+    <div className="card-silk rounded-3xl p-6 space-y-2.5 max-h-96 overflow-y-auto">
+      <h2 className="font-editorial text-2xl font-bold">
+        Pièces Actives ({products.length})
+      </h2>
+      {products.map((p) => (
+        <div key={p.id} className={rowCls}>
+          <div className="flex items-center gap-2.5 min-w-0">
+            <img
+              src={p.images?.[0] || ''}
+              alt={p.name}
+              className="w-10 h-10 rounded-xl object-cover bg-white shrink-0"
+            />
+            <div className="truncate">
+              <p className="text-xs font-bold truncate">{p.name}</p>
+              <p className="text-[11px] text-[#5A3826]">{p.price} $</p>
             </div>
-          ))}
-        </div>
-        <form onSubmit={handleSend} className="flex gap-2">
-          <input
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Écrire un message..."
-            className="flex-1 px-3 py-2 rounded-xl border text-xs"
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 rounded-xl bg-cream-highlight text-xs font-semibold"
-          >
-            Envoyer
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-export function CartDrawer({ cartState }) {
-  const { isOpen, items, total, onClose, onUpdateQty, onCheckout } = cartState;
-  if (!isOpen) {
-    return null;
-  }
-  const drawerCls =
-    'bg-[#FAF6F0] w-full max-w-md h-full p-6 flex flex-col justify-between';
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex justify-end">
-      <div className={drawerCls}>
-        <div className="flex justify-between items-center border-b pb-4">
-          <h2 className="font-serif text-xl font-semibold">Panier</h2>
-          <button type="button" onClick={onClose} className="text-xs underline">
-            Fermer
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto py-4 space-y-3">
-          {items.map((item) => (
-            <div
-              key={item.cartKey}
-              className="card-silk p-3.5 rounded-2xl flex justify-between items-center"
-            >
-              <div>
-                <p className="text-sm font-semibold">{item.name}</p>
-                <p className="text-xs">{item.price} $</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => onUpdateQty(item.cartKey, -1)}
-                  className="px-2 py-1 border rounded"
-                >
-                  -
-                </button>
-                <span className="text-xs font-bold">{item.qty}</span>
-                <button
-                  type="button"
-                  onClick={() => onUpdateQty(item.cartKey, 1)}
-                  className="px-2 py-1 border rounded"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-        {items.length > 0 && (
-          <button
-            type="button"
-            onClick={onCheckout}
-            className="w-full py-3 rounded-xl bg-cream-highlight text-xs font-semibold"
-          >
-            Commander ({total} $)
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <label className={`${BTN_CREAM} px-2.5 py-1 cursor-pointer`}>
+              Photo
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleReplace(p.id, e)}
+                className="hidden"
+              />
