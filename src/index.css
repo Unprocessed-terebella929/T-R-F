@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bg-cream-highlight {
+  background: linear-gradient(135deg, #e6d5be 0%, #d2b99b 100%);
+  color: #160e09;
+}
+
+.card-silk {
+  background: #ffffff;
+  border: 1px solid rgba(90, 56, 38, 0.14);
+  box-shadow: 0 12px 28px -12px rgba(59, 34, 22, 0.12);
+}
+
+.click-tactile {
+  transition: transform 150ms ease, box-shadow 200ms ease;
+}
+
+.click-tactile:active {
+  transform: scale(0.97);
+}
