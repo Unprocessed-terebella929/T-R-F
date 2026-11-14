@@ -164,6 +164,7 @@ export function App() {
   const [focusedId, setFocusedId] = useState('');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMsgOpen, setIsMsgOpen] = useState(false);
+  const [clickHalo, setClickHalo] = useState(null);
 
   const store = useStoreData();
   const gate = useAdminGate(setActiveTab);
@@ -200,8 +201,24 @@ export function App() {
     setActiveTab('suivi');
   };
 
+  const triggerHalo = (e) => {
+    setClickHalo({ id: Date.now(), x: e.clientX, y: e.clientY });
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF6F0] text-[#160E09]">
+    <div
+      onClickCapture={triggerHalo}
+      className="min-h-screen flex flex-col bg-[#FAF6F0] text-[#160E09]"
+    >
+      {clickHalo && (
+        <span
+          key={clickHalo.id}
+          onAnimationEnd={() => setClickHalo(null)}
+          style={{ left: `${clickHalo.x}px`, top: `${clickHalo.y}px` }}
+          className="click-halo-burst"
+        />
+      )}
+
       <Header
         navState={{
           activeTab,
