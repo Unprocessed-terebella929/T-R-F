@@ -1,8 +1,8 @@
 export const INITIAL_CATALOGUES = [
-  { id: 'Tous', title: 'Tout le Catalogue', subtitle: 'Toutes les pièces' },
-  { id: 'Bijouterie', title: 'Bijouterie', subtitle: 'Chevalières & joncs' },
-  { id: 'Maroquinerie', title: 'Maroquinerie', subtitle: 'Étuis & cuir' },
-  { id: 'Quotidien', title: 'Quotidien', subtitle: 'Accessoires choisis' }
+  { id: 'Tous', title: 'Tous', subtitle: 'Collection intégrale' },
+  { id: 'Bijouterie', title: 'Bijouterie', subtitle: 'Bagues, joncs & anneaux' },
+  { id: 'Maroquinerie', title: 'Maroquinerie', subtitle: 'Cuir & étuis RFID' },
+  { id: 'Quotidien', title: 'Quotidien', subtitle: 'Parapluies, miroirs & étoles' }
 ];
 
 export const NAV_TABS = [
@@ -12,18 +12,8 @@ export const NAV_TABS = [
   { id: 'suivi', label: 'Suivi' }
 ];
 
-function makeStudioSvg(bg, ring, accent, label) {
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">` +
-    `<rect width="400" height="300" fill="${bg}"/>` +
-    `<circle cx="200" cy="138" r="74" fill="none" stroke="${ring}" ` +
-    `stroke-width="14"/>` +
-    `<circle cx="200" cy="138" r="46" fill="none" stroke="${accent}" ` +
-    `stroke-width="3"/>` +
-    `<text x="200" y="255" text-anchor="middle" fill="#4A2E21" ` +
-    `font-family="Georgia,serif" font-size="14">${label}</text></svg>`;
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-}
+const IMG_BASE = 'https://images.unsplash.com/photo-';
+const IMG_PARAMS = '?auto=format&fit=crop&w=900&q=85';
 
 export const INITIAL_PRODUCTS = [
   {
@@ -31,15 +21,18 @@ export const INITIAL_PRODUCTS = [
     name: 'Chevalière Octogonale Gravée',
     category: 'Bijouterie',
     price: 165,
-    atelier: 'Atelier Orfèvre — Finition Miroir',
-    shortDesc: 'Table octogonale à monogramme gravé et anneau poli.',
+    atelier: 'Plateau 12 × 10 mm · Gravure profonde',
+    shortDesc: 'Table octogonale gravée et anneau poli miroir.',
     descriptif:
-      'Façonnée avec une table octogonale franche, cette chevalière ' +
-      'marie un encadrement poli miroir à un monogramme ciselé.',
-    images: [makeStudioSvg('#FAF6F0', '#C9A87C', '#4A2E21', 'REF-01')],
+      'Table octogonale franche avec encadrement poli miroir et ' +
+      'monogramme ciselé.',
+    images: [
+      `${IMG_BASE}1605100804763-247f67b3557e${IMG_PARAMS}`,
+      `${IMG_BASE}1599643478518-a784e5dc4c8f${IMG_PARAMS}`
+    ],
     variants: [
-      { id: 'v1', name: 'Or Pâle', color: '#E6D8B8' },
-      { id: 'v2', name: 'Argent Rhodié', color: '#D8DCE0' }
+      { id: 'v1', name: 'Or Champagne', color: '#D4B483' },
+      { id: 'v2', name: 'Argent Rhodié', color: '#CFD4DC' }
     ]
   },
   {
@@ -47,79 +40,92 @@ export const INITIAL_PRODUCTS = [
     name: 'Jonc Ruban Poli',
     category: 'Bijouterie',
     price: 95,
-    atelier: 'Atelier Ligne Pure — Galbe Anatomique',
-    shortDesc: 'Bracelet rigide ruban plat à reflets chauds.',
+    atelier: 'Largeur 5 mm · Acier 316L',
+    shortDesc: 'Bracelet rigide ruban plat à bords adoucis.',
     descriptif:
-      'Un ruban métallique cintré à la main qui épouse naturellement ' +
-      'le poignet sans aspérité.',
-    images: [makeStudioSvg('#F7F1E8', '#DFA888', '#5A3826', 'REF-02')],
+      'Ruban métallique cintré épousant le poignet avec reflets chauds.',
+    images: [
+      `${IMG_BASE}1611591437281-460bfbe1220a${IMG_PARAMS}`,
+      `${IMG_BASE}1573408301185-9146fe634ad0${IMG_PARAMS}`
+    ],
     variants: [
-      { id: 'v1', name: 'Cuivre Champagne', color: '#DFA888' },
-      { id: 'v2', name: 'Or Pâle', color: '#E8DCB9' }
+      { id: 'v1', name: 'Bronze Rosé', color: '#C89B7B' },
+      { id: 'v2', name: 'Or Pâle', color: '#DFC7A2' }
     ]
   },
   {
     id: 'REF-03',
-    name: 'Étui Cartes Blindé RFID',
-    category: 'Maroquinerie',
-    price: 110,
-    atelier: 'Division Sécurité — Aluminium Brossé',
-    shortDesc: 'Coque métallique anti-RFID à 10 compartiments.',
+    name: "Double Anneau d'Oreille",
+    category: 'Bijouterie',
+    price: 58,
+    atelier: 'Diamètre 10 mm · Sans perçage',
+    shortDesc: 'Double jonc parallèle en argent poli.',
     descriptif:
-      'Protégez vos cartes bancaires contre toute lecture sans contact ' +
-      'grâce à ce boîtier rigide à ouverture rapide.',
-    images: [makeStudioSvg('#F5EFE6', '#7C5846', '#1A110C', 'REF-03')],
+      'Double anneau parallèle conçu pour un maintien naturel sans perçage.',
+    images: [`${IMG_BASE}1630019852942-f89202989a59${IMG_PARAMS}`],
     variants: [
-      { id: 'v1', name: 'Bronze Chocolat', color: '#7C5846' },
-      { id: 'v2', name: 'Gris Acier', color: '#6E737B' }
+      { id: 'v1', name: 'Argent', color: '#DCDEE2' },
+      { id: 'v2', name: 'Or Pâle', color: '#D8C29D' }
     ]
   },
   {
     id: 'REF-04',
-    name: 'Porte-Cartes Cuir à Tirette',
+    name: 'Étui Cartes Blindé RFID',
     category: 'Maroquinerie',
-    price: 88,
-    atelier: 'Sellerie Tradition — Cuir Pleine Fleur',
-    shortDesc: 'Étui en cuir grainé patiné avec sangle étagée.',
+    price: 110,
+    atelier: '96 × 66 × 13 mm · 10 compartiments',
+    shortDesc: 'Coque anti-RFID à ouverture en éventail.',
     descriptif:
-      'Un cuir pleine fleur au grain naturel doublé d’une sangle qui ' +
-      'déploie vos cartes en cascade d’un seul geste.',
-    images: [makeStudioSvg('#F8F2EA', '#7A4B32', '#3B261D', 'REF-04')],
+      'Boîtier rigide protégeant vos cartes contre les lectures sans contact.',
+    images: [`${IMG_BASE}1627123424574-724758594e93${IMG_PARAMS}`],
     variants: [
-      { id: 'v1', name: 'Cognac Patiné', color: '#7A4B32' },
-      { id: 'v2', name: 'Expresso', color: '#3B261D' }
+      { id: 'v1', name: 'Marron Crème', color: '#CBB092' },
+      { id: 'v2', name: 'Acier Brossé', color: '#6E737B' }
     ]
   },
   {
     id: 'REF-05',
-    name: 'Parapluie Manche Bois Noble',
-    category: 'Quotidien',
-    price: 140,
-    atelier: 'Manufacture Climat — Fût Acajou',
-    shortDesc: 'Toile haute densité déperlante et poignée en bois.',
+    name: 'Porte-Cartes Cuir à Tirette',
+    category: 'Maroquinerie',
+    price: 88,
+    atelier: '104 × 72 mm · Cuir pleine fleur',
+    shortDesc: 'Étui en cuir grainé avec sangle d’extraction.',
     descriptif:
-      'Armature renforcée contre les bourrasques, toile serrée et ' +
-      'poignée cylindrique en bois d’acajou poli.',
-    images: [makeStudioSvg('#F6F0E6', '#2B1D16', '#C9A87C', 'REF-05')],
+      'Cuir pleine fleur doublé d’une sangle déployant les cartes en cascade.',
+    images: [`${IMG_BASE}1553062407-98eeb64c6a62${IMG_PARAMS}`],
     variants: [
-      { id: 'v1', name: 'Noir Onyx', color: '#1F2124' },
-      { id: 'v2', name: 'Bleu Nuit', color: '#20364D' }
+      { id: 'v1', name: 'Cognac', color: '#7D4E35' },
+      { id: 'v2', name: 'Expresso', color: '#3B2216' }
     ]
   },
   {
     id: 'REF-06',
-    name: 'Étole Cachemire Arbre Doré',
+    name: 'Parapluie Manche Bois',
+    category: 'Quotidien',
+    price: 140,
+    atelier: 'Envergure 108 cm · Poignée bois',
+    shortDesc: 'Toile déperlante et poignée en bois tourné.',
+    descriptif:
+      'Armature renforcée, toile haute densité et poignée en bois noble.',
+    images: [`${IMG_BASE}1515694346937-94d85e41e6f0${IMG_PARAMS}`],
+    variants: [
+      { id: 'v1', name: 'Noir Obsidienne', color: '#1C130E' },
+      { id: 'v2', name: 'Ardoise', color: '#4E545C' }
+    ]
+  },
+  {
+    id: 'REF-07',
+    name: 'Étole Cachemire Doré',
     category: 'Quotidien',
     price: 155,
-    atelier: 'Tissage Précieux — Bordure Or Pâle',
-    shortDesc: 'Grande étole ivoire souple ornée de motifs dorés.',
+    atelier: '190 × 70 cm · Laine & cachemire',
+    shortDesc: 'Grande étole ivoire à motifs dorés.',
     descriptif:
-      'D’une douceur enveloppante, cette étole associe une maille ' +
-      'ivoire lumineuse à un tissage délicat.',
-    images: [makeStudioSvg('#FAF5EC', '#C8A97E', '#5A3826', 'REF-06')],
+      'Maille douce ivoire ornée d’un motif doré et d’une bordure fine.',
+    images: [`${IMG_BASE}1584917865442-de89df76afd3${IMG_PARAMS}`],
     variants: [
-      { id: 'v1', name: 'Ivoire & Or', color: '#EFE8DA' },
-      { id: 'v2', name: 'Grège Sablé', color: '#D8CFC2' }
+      { id: 'v1', name: 'Ivoire Or', color: '#EFE7DC' },
+      { id: 'v2', name: 'Marron Crème', color: '#DECAB1' }
     ]
   }
 ];
@@ -138,9 +144,9 @@ export const INITIAL_ORDERS = [
     id: 'TR-2026-1094',
     date: '2026-11-14',
     customerMasked: 'Clarisse K*****',
-    amount: 253,
+    amount: 250,
     paymentMethod: 'Carte Bancaire',
-    step: 2,
+    step: 1,
     priority: 'crucial'
   }
 ];
@@ -150,7 +156,7 @@ export const INITIAL_MESSAGES = [
     id: 'MSG-101',
     sender: 'Client Kinshasa',
     subject: 'Disponibilité REF-01',
-    body: 'Bonjour, la chevalière est-elle livrable à Gombe sous 24h ?',
-    reply: 'Oui, livraison assurée sous 24h à Gombe.'
+    body: 'Bonjour, la chevalière est-elle livrable sous 24h ?',
+    reply: 'Oui, livraison assurée sous 24h.'
   }
 ];
