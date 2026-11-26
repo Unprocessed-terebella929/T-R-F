@@ -1,5 +1,5 @@
-import { X, Trash2 } from 'lucide-react';
 import { PawaPayCheckout } from './PawaPayCheckout.jsx';
+import { CloseIcon, TrashIcon } from './Icons.jsx';
 
 export function CartDrawer({ isOpen, items, onClose, onRemove, onCheckout }) {
   if (!isOpen) {
@@ -8,7 +8,7 @@ export function CartDrawer({ isOpen, items, onClose, onRemove, onCheckout }) {
   const total = items.reduce((sum, item) => sum + Number(item.price || 0), 0);
 
   return (
-    <div className="fixed inset-0 z-40 bg-[#1C1914]/55 backdrop-blur-xs flex justify-end">
+    <div className="fixed inset-0 z-40 bg-[#1C1914]/55 backdrop-blur-sm flex justify-end">
       <aside className="w-full max-w-md bg-[#FAF7F0] h-full p-5 flex flex-col justify-between shadow-2xl animate-rise">
         <div className="space-y-4 overflow-y-auto">
           <div className="flex items-center justify-between border-b border-[#4E4634]/15 pb-3">
@@ -19,7 +19,7 @@ export function CartDrawer({ isOpen, items, onClose, onRemove, onCheckout }) {
               className="p-2 rounded-full btn-vintage-ghost"
               aria-label="Fermer le panier"
             >
-              <X className="w-4 h-4" />
+              <CloseIcon className="w-4 h-4" />
             </button>
           </div>
 
@@ -49,7 +49,7 @@ export function CartDrawer({ isOpen, items, onClose, onRemove, onCheckout }) {
                     className="p-1.5 text-[#665E4E] hover:text-[#1C1914]"
                     aria-label="Retirer du panier"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <TrashIcon className="w-3.5 h-3.5" />
                   </button>
                 </div>
               ))}
