@@ -4,6 +4,13 @@ export const BRAND_SLOGAN = 'L’essentiel, bien choisi.';
 
 export const MAX_INITIAL_PHOTOS = 60;
 
+export const NAV_TABS = [
+  { id: 'boutique', label: 'Boutique' },
+  { id: 'studio', label: 'Studio' },
+  { id: 'suivi', label: 'Suivi' },
+  { id: 'signatures', label: 'Signatures' }
+];
+
 export const MAISONS = [
   { id: 'tous', label: 'Toutes les pièces' },
   { id: 'bijouterie', label: 'Bijouterie' },
