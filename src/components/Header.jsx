@@ -1,178 +1,133 @@
-import { NAV_TABS } from '../data/catalog.js';
+import { ShoppingBag, ArrowUpRight } from 'lucide-react';
+import { BRAND_SLOGAN, COCKPIT_URL } from '../data/storeCatalog.js';
 
-const T_PATHS = {
-  scytheOuter: 'M 42 15 C 14 17, 5 36, 17 55 C 11 41, 18 25, 40 22 Z',
-  undertuck: 'M 19 31 C 27 23, 39 22, 62 24 C 46 27, 30 27, 19 31 Z',
-  harpoonWing:
-    'M 10 16 C 24 9, 36 8, 43 12 L 46 3 L 49 12 L 196 12 ' +
-    'L 188 8 L 222 14 L 194 20 L 201 16 L 52 16 L 42 20 Z',
-  jaggedStem:
-    'M 41 14 L 51 14 L 51 24 L 55 29 L 50 28 L 52 38 L 49 44 ' +
-    'L 50 51 L 46 60 L 42 51 L 40 43 L 44 39 L 41 31 L 44 26 Z',
-  gothicBase:
-    'M 30 51 C 36 55, 42 55, 46 60 C 50 55, 56 55, 62 51 ' +
-    'L 55 48 L 46 53 L 37 48 Z',
-  thornyVine: 'M 40 22 C 51 28, 39 36, 51 43 C 42 48, 46 53, 46 56',
-  crossTop: 'M 46 4 L 48 12 L 54 14 L 48 16 L 46 23 L 44 16 L 38 14 L 44 12 Z'
-};
+const NAV_TABS = [
+  { id: 'boutique', label: 'Boutique' },
+  { id: 'studio', label: 'Studio' },
+  { id: 'suivi', label: 'Suivi' },
+  { id: 'signatures', label: 'Signatures' }
+];
 
-function getNavBtnClass(isActive) {
-  if (isActive) {
-    return 'bg-cream-highlight font-semibold shadow-sm';
-  }
-  return 'text-[#2B1D16]/80 hover:bg-[#EFE6D8]';
-}
-
-function SovereignTSvgDefs() {
+function BrandLogo() {
   return (
-    <defs>
-      <linearGradient id="obsidianGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#2B1B12" />
-        <stop offset="55%" stopColor="#120B07" />
-        <stop offset="100%" stopColor="#050302" />
-      </linearGradient>
-      <linearGradient id="bronzeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#F3E5D0" />
-        <stop offset="50%" stopColor="#C8A97E" />
-        <stop offset="100%" stopColor="#6E4B3A" />
-      </linearGradient>
-    </defs>
-  );
-}
-
-function SovereignTSymbol() {
-  return (
-    <g>
-      <path d={T_PATHS.scytheOuter} fill="url(#bronzeGrad)" stroke="#120B07" />
-      <path d={T_PATHS.undertuck} fill="#8C6239" />
-      <path d={T_PATHS.harpoonWing} fill="url(#obsidianGrad)" stroke="#C8A97E" />
-      <path d={T_PATHS.jaggedStem} fill="url(#obsidianGrad)" stroke="#DECAB1" />
-      <path d={T_PATHS.gothicBase} fill="url(#bronzeGrad)" stroke="#120B07" />
-      <path d={T_PATHS.crossTop} fill="url(#bronzeGrad)" />
-      <path d={T_PATHS.thornyVine} fill="none" stroke="#DFC39D" strokeWidth="1.5" />
-    </g>
-  );
-}
-
-function SovereignTLogo({ onSelectHome }) {
-  return (
-    <button
-      type="button"
-      onClick={onSelectHome}
-      className="text-left focus:outline-none click-tactile"
-      aria-label="Ta référence.com"
-    >
-      <svg viewBox="0 0 295 64" className="h-12 sm:h-14 w-auto">
-        <SovereignTSvgDefs />
-        <SovereignTSymbol />
-        <text
-          x="55"
-          y="46"
-          fill="#160E09"
-          fontFamily="Georgia, serif"
-          fontSize="28"
-          fontWeight="700"
-          letterSpacing="-0.7"
+    <div className="flex flex-col">
+      <div className="relative inline-flex items-end select-none">
+        <svg
+          viewBox="0 0 212 52"
+          className="h-9 sm:h-10 w-auto"
+          aria-label="Ta référence.com"
         >
-          a référence.com
-        </text>
-      </svg>
-    </button>
-  );
-}
-
-function DesktopNavBar({ activeTab, onChangeTab, isAdminUnlocked }) {
-  const btnBase = 'px-3.5 py-2 rounded-xl text-xs uppercase tracking-wider';
-  return (
-    <nav className="hidden md:flex items-center gap-1.5">
-      {NAV_TABS.map((tab) => (
-        <button
-          key={tab.id}
-          type="button"
-          onClick={() => onChangeTab(tab.id)}
-          className={`click-tactile ${btnBase} ${getNavBtnClass(
-            activeTab === tab.id
-          )}`}
-        >
-          {tab.label}
-        </button>
-      ))}
-      {isAdminUnlocked && (
-        <button
-          type="button"
-          onClick={() => onChangeTab('admin')}
-          className={`click-tactile ${btnBase} ${getNavBtnClass(
-            activeTab === 'admin'
-          )}`}
-        >
-          Atelier
-        </button>
-      )}
-    </nav>
-  );
-}
-
-function MobileNavBar({ activeTab, onChangeTab, isAdminUnlocked }) {
-  const tabs = isAdminUnlocked
-    ? [...NAV_TABS, { id: 'admin', label: 'Atelier' }]
-    : NAV_TABS;
-  const barCls =
-    'grid md:hidden grid-flow-col auto-cols-fr gap-1 px-3 py-2 border-t';
-
-  return (
-    <div className={barCls}>
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          type="button"
-          onClick={() => onChangeTab(tab.id)}
-          className={`py-1.5 rounded-lg text-[11px] uppercase ${getNavBtnClass(
-            activeTab === tab.id
-          )}`}
-        >
-          {tab.label}
-        </button>
-      ))}
+          <path
+            d="M4 11 C36 6, 98 6, 166 10 L170 13 L152 14 C108 12, 62 12, 34 15 L30 22 L28 49 L21 44 L23 20 L14 16 Z"
+            fill="#1C1914"
+          />
+          <text
+            x="35"
+            y="40"
+            fill="#1C1914"
+            fontFamily="Tanker, Georgia, serif"
+            fontSize="26"
+            letterSpacing="0.8"
+          >
+            a référence
+          </text>
+          <circle cx="168" cy="37" r="2.6" fill="#C2B088" />
+          <text
+            x="173"
+            y="40"
+            fill="#4E4634"
+            fontFamily="Satoshi, sans-serif"
+            fontSize="14"
+            fontWeight="700"
+          >
+            com
+          </text>
+        </svg>
+      </div>
+      <span className="text-[11px] tracking-[0.18em] uppercase text-[#665E4E] pl-1">
+        {BRAND_SLOGAN}
+      </span>
     </div>
   );
 }
 
-export function Header({ navState }) {
-  const { activeTab, onChangeTab, isAdminUnlocked, cartCount } = navState;
-  const { onOpenCart, onOpenMessages } = navState;
-  const rowWrap =
-    'max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between';
-  const msgBtn =
-    'click-tactile px-3.5 py-2 rounded-xl bg-latte-soft text-xs font-semibold';
-  const cartBtn =
-    'click-tactile px-3.5 py-2 rounded-xl bg-cream-highlight text-xs flex gap-2';
-
+export function Header({ activeTab, onChangeTab, cartCount, onOpenCart }) {
   return (
-    <header className="sticky top-0 z-30 bg-[#FAF6F0]/95 backdrop-blur-md border-b">
-      <div className={rowWrap}>
-        <SovereignTLogo onSelectHome={() => onChangeTab('boutique')} />
-        <DesktopNavBar
-          activeTab={activeTab}
-          onChangeTab={onChangeTab}
-          isAdminUnlocked={isAdminUnlocked}
-        />
+    <header className="sticky top-0 z-30 border-b border-[#4E4634]/15 bg-[#F4EFE4]/92 backdrop-blur-md">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => onChangeTab('boutique')}
+          className="text-left focus:outline-none"
+        >
+          <BrandLogo />
+        </button>
+
+        <nav className="hidden md:flex items-center gap-1.5">
+          {NAV_TABS.map((tab) => {
+            const active = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => onChangeTab(tab.id)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  active
+                    ? 'btn-limewood'
+                    : 'text-[#1C1914]/80 hover:bg-[#EAE2D2]/80'
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </nav>
+
         <div className="flex items-center gap-2">
-          <button type="button" onClick={onOpenMessages} className={msgBtn}>
-            Messages
-          </button>
-          <button type="button" onClick={onOpenCart} className={cartBtn}>
-            <span className="font-semibold">Panier</span>
-            <span className="px-2 py-0.5 rounded-full bg-white/85 font-bold">
-              {cartCount}
-            </span>
+          <a
+            href={COCKPIT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-medium btn-vintage-ghost"
+          >
+            <span>Cockpit</span>
+            <ArrowUpRight className="w-3.5 h-3.5 text-[#4E4634]" />
+          </a>
+
+          <button
+            type="button"
+            onClick={onOpenCart}
+            className="relative inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium btn-limewood"
+            aria-label="Ouvrir le panier"
+          >
+            <ShoppingBag className="w-3.5 h-3.5" />
+            <span>Panier</span>
+            {cartCount > 0 && (
+              <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-[#C2B088] text-[#1C1914] text-[10px] font-bold">
+                {cartCount}
+              </span>
+            )}
           </button>
         </div>
       </div>
-      <MobileNavBar
-        activeTab={activeTab}
-        onChangeTab={onChangeTab}
-        isAdminUnlocked={isAdminUnlocked}
-      />
+
+      <div className="md:hidden border-t border-[#4E4634]/10 px-4 py-2 flex items-center justify-between gap-1 overflow-x-auto">
+        {NAV_TABS.map((tab) => {
+          const active = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => onChangeTab(tab.id)}
+              className={`px-3 py-1 rounded-full text-[11px] font-medium whitespace-nowrap transition-all ${
+                active ? 'btn-limewood' : 'text-[#4E4634]'
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
     </header>
   );
 }
