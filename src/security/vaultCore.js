@@ -1,14 +1,14 @@
 export const STORAGE_KEYS = {
-  PRODUCTS: 'taref_catalog_items_v2',
-  SEALED: 'taref_initial_import_sealed_v2',
-  ORDERS: 'taref_client_orders_v2',
-  SIGNATURES: 'taref_signatures_v2',
-  CART: 'taref_guest_cart_v2'
+  PRODUCTS: 'taref_catalog_items_v3',
+  SEALED: 'taref_initial_import_sealed_v3',
+  ORDERS: 'taref_client_orders_v3',
+  SIGNATURES: 'taref_signatures_v3',
+  CART: 'taref_guest_cart_v3'
 };
 
 const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_FILE_BYTES = 8 * 1024 * 1024;
-const MAX_DIMENSION = 960;
+const MAX_DIMENSION = 900;
 
 export function sanitizeText(value, maxLen = 90) {
   return String(value || '')
@@ -60,7 +60,7 @@ export async function verifyPrivateKey(code) {
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(data?.error || 'Accès refusé par le serveur.');
+    throw new Error(data?.error || 'Clé refusée par le serveur.');
   }
   return data;
 }
@@ -76,18 +76,19 @@ export function compressImageFile(file) {
       return;
     }
     const reader = new FileReader();
-    reader.onerror = () => reject(new Error('Lecture du fichier impossible.'));
+    reader.onerror = () => reject(new Error('Lecture impossible.'));
     reader.onload = () => {
       const img = new Image();
-      img.onerror = () => reject(new Error('Image corrompue ou invalide.'));
+      img.onerror = () => reject(new Error('Image invalide.'));
       img.onload = () => {
-        const scale = Math.min(1, MAX_DIMENSION / Math.max(img.width, img.height));
+        const largest = Math.max(img.width, img.height);
+        const scale = Math.min(1, MAX_DIMENSION / largest);
         const canvas = document.createElement('canvas');
         canvas.width = Math.max(1, Math.round(img.width * scale));
         canvas.height = Math.max(1, Math.round(img.height * scale));
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/webp', 0.78));
+        resolve(canvas.toDataURL('image/webp', 0.76));
       };
       img.src = String(reader.result || '');
     };
