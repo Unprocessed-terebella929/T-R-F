@@ -1,325 +1,180 @@
-import { useState, useEffect, useMemo } from 'react';
-import {
-  INITIAL_CATALOGUES,
-  INITIAL_PRODUCTS,
-  INITIAL_ORDERS,
-  INITIAL_MESSAGES
-} from './data/catalog.js';
-import {
-  SECURITY_LIMITS,
-  sanitizeInput,
-  verifyAccessDigest,
-  loadGuestCart,
-  saveGuestCart
-} from './security/sovereignCore.js';
+import { useEffect, useRef, useState } from 'react';
 import { Header } from './components/Header.jsx';
 import {
-  HeroSearchAndCatalogues,
   BoutiqueView,
-  FichesView
+  SignaturesView,
+  StudioView,
+  SuiviView
 } from './components/StoreViews.jsx';
-import { StudioView, SuiviView } from './components/StudioAndSuivi.jsx';
+import { CartDrawer } from './components/CartDrawer.jsx';
+import { OneTimeImportPanel } from './components/OneTimeImportPanel.jsx';
+import { BRAND_SLOGAN, COCKPIT_URL } from './data/storeCatalog.js';
 import {
-  UnlockedAdminBanner,
-  AdminPanel,
-  AdminAuthModal,
-  MessagePopup,
-  CartDrawer
-} from './components/AdminAndCart.jsx';
+  STORAGE_KEYS,
+  readStorage,
+  writeStorage
+} from './security/vaultCore.js';
 
-function mergeItem(prev, product, variant) {
-  const cartKey = `${product.id}-${variant.id}`;
-  const found = prev.find((i) => i.cartKey === cartKey);
-  if (found) {
-    return prev.map((i) =>
-      i.cartKey === cartKey
-        ? { ...i, qty: Math.min(i.qty + 1, SECURITY_LIMITS.MAX_ITEM_QTY) }
-        : i
-    );
-  }
-  return [
-    ...prev,
-    { cartKey, id: product.id, name: product.name, price: product.price, qty: 1 }
-  ];
+const TAB_ORDER = ['boutique', 'studio', 'suivi', 'signatures'];
+
+function isPrivateImportHash() {
+  return window.location.hash === '#canal-initial';
 }
 
-function useStoreData() {
-  const [products, setProducts] = useState(INITIAL_PRODUCTS);
-  const [orders, setOrders] = useState(INITIAL_ORDERS);
-  const [messages, setMessages] = useState(INITIAL_MESSAGES);
-  const [cart, setCart] = useState([]);
-
-  useEffect(() => {
-    setCart(loadGuestCart(null));
-  }, []);
-
-  useEffect(() => {
-    saveGuestCart(cart, null);
-  }, [cart]);
-
-  const addMessage = (body) => {
-    const entry = {
-      id: `MSG-${Date.now()}`,
-      sender: 'Visiteur',
-      subject: 'Demande',
-      body,
-      reply: ''
-    };
-    setMessages((prev) => [entry, ...prev]);
-  };
-
-  const replyMessage = (id, reply) => {
-    setMessages((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, reply } : m))
-    );
-  };
-
-  return {
-    products,
-    setProducts,
-    orders,
-    setOrders,
-    messages,
-    addMessage,
-    replyMessage,
-    cart,
-    setCart
-  };
-}
-
-function useAdminGate(setActiveTab) {
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [code, setCode] = useState('');
-  const [clicks, setClicks] = useState(0);
-
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.altKey && e.shiftKey && e.key.toLowerCase() === 'a') {
-        setIsModalOpen(true);
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
-
-  const handleSealClick = () => {
-    if (clicks + 1 >= SECURITY_LIMITS.ADMIN_UNLOCK_CLICKS) {
-      setIsModalOpen(true);
-      setClicks(0);
-      return;
-    }
-    setClicks(clicks + 1);
-  };
-
-  const handleVerify = (event) => {
-    event.preventDefault();
-    if (verifyAccessDigest(code)) {
-      setIsUnlocked(true);
-      setIsModalOpen(false);
-      setActiveTab('admin');
-    }
-    setCode('');
-  };
-
-  return {
-    isUnlocked,
-    setIsUnlocked,
-    isModalOpen,
-    setIsModalOpen,
-    code,
-    setCode,
-    handleSealClick,
-    handleVerify
-  };
-}
-
-function TabContent({ state }) {
-  const { activeTab, filtered, focusedId, onOpenFiche, onAdd } = state;
-  const { orders, adminProps, isAdminUnlocked } = state;
-
-  if (activeTab === 'fiches') {
-    return (
-      <FichesView products={filtered} focusedId={focusedId} onAdd={onAdd} />
-    );
-  }
-  if (activeTab === 'studio') {
-    return <StudioView products={filtered} onAdd={onAdd} />;
-  }
-  if (activeTab === 'suivi') {
-    return <SuiviView orders={orders} />;
-  }
-  if (activeTab === 'admin' && isAdminUnlocked) {
-    return <AdminPanel adminProps={adminProps} />;
-  }
-  return (
-    <BoutiqueView products={filtered} onOpenFiche={onOpenFiche} onAdd={onAdd} />
-  );
-}
-
-export function App() {
+export default function App() {
   const [activeTab, setActiveTab] = useState('boutique');
-  const [selectedCategory, setSelectedCategory] = useState('Tous');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [focusedId, setFocusedId] = useState('');
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isMsgOpen, setIsMsgOpen] = useState(false);
-  const [clickHalo, setClickHalo] = useState(null);
+  const [products, setProducts] = useState(() =>
+    readStorage(STORAGE_KEYS.PRODUCTS, [])
+  );
+  const [cart, setCart] = useState(() => readStorage(STORAGE_KEYS.CART, []));
+  const [orders, setOrders] = useState(() =>
+    readStorage(STORAGE_KEYS.ORDERS, [])
+  );
+  const [signatures, setSignatures] = useState(() =>
+    readStorage(STORAGE_KEYS.SIGNATURES, [])
+  );
+  const [studioItem, setStudioItem] = useState(null);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(() => isPrivateImportHash());
+  const touchStartX = useRef(0);
 
-  const store = useStoreData();
-  const gate = useAdminGate(setActiveTab);
+  useEffect(() => {
+    const onHashChange = () => setImportOpen(isPrivateImportHash());
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
 
-  const filtered = useMemo(() => {
-    const q = searchQuery.toLowerCase();
-    return store.products.filter((p) => {
-      const catOk = selectedCategory === 'Tous' || p.category === selectedCategory;
-      const qOk =
-        !q || p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q);
-      return catOk && qOk;
-    });
-  }, [store.products, selectedCategory, searchQuery]);
+  const saveProducts = (nextList) => {
+    setProducts(nextList);
+    writeStorage(STORAGE_KEYS.PRODUCTS, nextList);
+  };
 
-  const total = store.cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const count = store.cart.reduce((s, i) => s + i.qty, 0);
+  const handleAddToCart = (item) => {
+    const nextCart = [...cart, item];
+    setCart(nextCart);
+    writeStorage(STORAGE_KEYS.CART, nextCart);
+    setCartOpen(true);
+  };
 
-  const handleCheckout = () => {
-    const rand = Math.floor(
-      SECURITY_LIMITS.ORDER_ID_MIN + Math.random() * SECURITY_LIMITS.ORDER_ID_RANGE
-    );
+  const handleRemoveCart = (index) => {
+    const nextCart = cart.filter((_, i) => i !== index);
+    setCart(nextCart);
+    writeStorage(STORAGE_KEYS.CART, nextCart);
+  };
+
+  const handleCheckout = (paymentInfo) => {
+    const total = cart.reduce((sum, item) => sum + Number(item.price || 0), 0);
+    const code = Math.floor(1000 + Math.random() * 9000);
     const order = {
-      id: `TR-2026-${rand}`,
+      id: `TR-2026-${code}`,
       date: new Date().toISOString().split('T')[0],
-      customerMasked: 'Client Invité',
       amount: total,
-      paymentMethod: 'USD',
-      step: 1,
-      priority: 'crucial'
+      paymentMethod: paymentInfo?.paymentMethod || 'Mobile Money',
+      depositId: paymentInfo?.depositId || '',
+      step: 1
     };
-    store.setOrders([order, ...store.orders]);
-    store.setCart([]);
-    setIsCartOpen(false);
+    const nextOrders = [order, ...orders];
+    setOrders(nextOrders);
+    writeStorage(STORAGE_KEYS.ORDERS, nextOrders);
+    setCart([]);
+    writeStorage(STORAGE_KEYS.CART, []);
+    setCartOpen(false);
     setActiveTab('suivi');
   };
 
-  const triggerHalo = (e) => {
-    setClickHalo({ id: Date.now(), x: e.clientX, y: e.clientY });
+  const handleAddSignature = (entry) => {
+    const nextList = [entry, ...signatures].slice(0, 50);
+    setSignatures(nextList);
+    writeStorage(STORAGE_KEYS.SIGNATURES, nextList);
+  };
+
+  const handleTouchEnd = (endX) => {
+    const delta = endX - touchStartX.current;
+    if (Math.abs(delta) < 65) {
+      return;
+    }
+    const idx = TAB_ORDER.indexOf(activeTab);
+    if (delta < 0 && idx < TAB_ORDER.length - 1) {
+      setActiveTab(TAB_ORDER[idx + 1]);
+    } else if (delta > 0 && idx > 0) {
+      setActiveTab(TAB_ORDER[idx - 1]);
+    }
+  };
+
+  const closePrivatePanel = () => {
+    setImportOpen(false);
+    if (window.location.hash === '#canal-initial') {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
   };
 
   return (
     <div
-      onClickCapture={triggerHalo}
-      className="min-h-screen flex flex-col bg-[#FAF6F0] text-[#160E09]"
+      className="min-h-screen vintage-sand-bg flex flex-col"
+      onTouchStart={(e) => {
+        touchStartX.current = e.touches[0].clientX;
+      }}
+      onTouchEnd={(e) => handleTouchEnd(e.changedTouches[0].clientX)}
     >
-      {clickHalo && (
-        <span
-          key={clickHalo.id}
-          onAnimationEnd={() => setClickHalo(null)}
-          style={{ left: `${clickHalo.x}px`, top: `${clickHalo.y}px` }}
-          className="click-halo-burst"
-        />
-      )}
-
       <Header
-        navState={{
-          activeTab,
-          onChangeTab: setActiveTab,
-          isAdminUnlocked: gate.isUnlocked,
-          cartCount: count,
-          onOpenCart: () => setIsCartOpen(true),
-          onOpenMessages: () => setIsMsgOpen(true)
-        }}
+        activeTab={activeTab}
+        onChangeTab={setActiveTab}
+        cartCount={cart.length}
+        onOpenCart={() => setCartOpen(true)}
       />
 
-      {gate.isUnlocked && activeTab !== 'admin' && (
-        <UnlockedAdminBanner
-          onOpenAdmin={() => setActiveTab('admin')}
-          onLock={() => gate.setIsUnlocked(false)}
-        />
-      )}
-
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 pb-12">
-        {activeTab !== 'admin' && (
-          <HeroSearchAndCatalogues
-            heroState={{
-              searchQuery,
-              onSearch: (v) => setSearchQuery(sanitizeInput(v)),
-              catalogues: INITIAL_CATALOGUES,
-              products: store.products,
-              selectedCategory,
-              onSelectCategory: setSelectedCategory
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-7">
+        {activeTab === 'boutique' && (
+          <BoutiqueView
+            products={products}
+            onAddToCart={handleAddToCart}
+            onOpenStudio={(item) => {
+              setStudioItem(item);
+              setActiveTab('studio');
             }}
           />
         )}
-        <TabContent
-          state={{
-            activeTab,
-            filtered,
-            focusedId,
-            onOpenFiche: (id) => {
-              setFocusedId(id);
-              setActiveTab('fiches');
-            },
-            onAdd: (p, v) => {
-              store.setCart((prev) => mergeItem(prev, p, v));
-              setIsCartOpen(true);
-            },
-            orders: store.orders,
-            isAdminUnlocked: gate.isUnlocked,
-            adminProps: {
-              products: store.products,
-              catalogues: INITIAL_CATALOGUES,
-              messages: store.messages,
-              onAddProduct: (item) => store.setProducts([item, ...store.products]),
-              onClearVectorCatalog: () => store.setProducts([]),
-              onReplyMessage: store.replyMessage,
-              onLock: () => {
-                gate.setIsUnlocked(false);
-                setActiveTab('boutique');
-              }
-            }
-          }}
-        />
+        {activeTab === 'studio' && (
+          <StudioView activeItem={studioItem} products={products} />
+        )}
+        {activeTab === 'suivi' && <SuiviView orders={orders} />}
+        {activeTab === 'signatures' && (
+          <SignaturesView
+            signatures={signatures}
+            onAddSignature={handleAddSignature}
+          />
+        )}
       </main>
 
-      <footer className="border-t py-6 px-4 text-center text-xs text-[#4A2E21]/70">
-        <span>© 2026 Ta référence.com </span>
-        <button type="button" onClick={gate.handleSealClick} className="px-1">
-          ◆
-        </button>
+      <footer className="border-t border-[#4E4634]/15 py-5 px-4 text-center">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#665E4E]">
+          <span>© 2026 Ta référence.com — {BRAND_SLOGAN}</span>
+          <a
+            href={COCKPIT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-[#1C1914] transition-colors"
+          >
+            Accès Cockpit privé ↗
+          </a>
+        </div>
       </footer>
 
-      <AdminAuthModal
-        modalState={{
-          isOpen: gate.isModalOpen,
-          code: gate.code,
-          onChangeCode: gate.setCode,
-          onSubmit: gate.handleVerify,
-          onClose: () => gate.setIsModalOpen(false)
-        }}
-      />
-      <MessagePopup
-        popupState={{
-          isOpen: isMsgOpen,
-          messages: store.messages,
-          onSend: store.addMessage,
-          onClose: () => setIsMsgOpen(false)
-        }}
-      />
       <CartDrawer
-        cartState={{
-          isOpen: isCartOpen,
-          items: store.cart,
-          total,
-          onClose: () => setIsCartOpen(false),
-          onUpdateQty: (key, d) =>
-            store.setCart((prev) =>
-              prev
-                .map((i) => (i.cartKey === key ? { ...i, qty: i.qty + d } : i))
-                .filter((i) => i.qty > 0)
-            ),
-          onCheckout: handleCheckout
-        }}
+        isOpen={cartOpen}
+        items={cart}
+        onClose={() => setCartOpen(false)}
+        onRemove={handleRemoveCart}
+        onCheckout={handleCheckout}
       />
+
+      {importOpen && (
+        <OneTimeImportPanel
+          products={products}
+          onSaveProducts={saveProducts}
+          onClose={closePrivatePanel}
+        />
+      )}
     </div>
   );
 }
