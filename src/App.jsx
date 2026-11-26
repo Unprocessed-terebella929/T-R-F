@@ -1,21 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { Header } from './components/Header.jsx';
-import {
-  BoutiqueView,
-  SignaturesView,
-  StudioView,
-  SuiviView
-} from './components/StoreViews.jsx';
+import { BoutiqueView } from './components/BoutiqueView.jsx';
+import { StudioView } from './components/StudioView.jsx';
+import { SuiviView } from './components/SuiviView.jsx';
+import { SignaturesView } from './components/SignaturesView.jsx';
 import { CartDrawer } from './components/CartDrawer.jsx';
 import { OneTimeImportPanel } from './components/OneTimeImportPanel.jsx';
-import { BRAND_SLOGAN, COCKPIT_URL } from './data/storeCatalog.js';
+import { BRAND_SLOGAN, COCKPIT_URL, NAV_TABS } from './data/storeCatalog.js';
 import {
   STORAGE_KEYS,
   readStorage,
   writeStorage
 } from './security/vaultCore.js';
 
-const TAB_ORDER = ['boutique', 'studio', 'suivi', 'signatures'];
+const TAB_ORDER = NAV_TABS.map((t) => t.id);
 
 function isPrivateImportHash() {
   return window.location.hash === '#canal-initial';
