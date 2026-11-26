@@ -117,7 +117,6 @@ body {
     opacity: 0.9;
   }
 }
-
 .animate-archival-line {
   animation: softPulseLine 3.4s ease-in-out infinite;
 }
