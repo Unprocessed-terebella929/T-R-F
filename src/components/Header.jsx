@@ -2,46 +2,52 @@ import { useEffect, useState } from 'react';
 import { BRAND_SLOGAN, COCKPIT_URL, NAV_TABS } from '../data/storeCatalog.js';
 import { ArrowOutIcon, BagIcon } from './Icons.jsx';
 
-/* Tracé sculptural Tribal × Gothique :
- * - Crête ogivale gothique + aile tribale acérée à gauche
- * - Lame supérieure tribale ciselée s'étirant au-dessus de "a référence"
- *   et s'arrêtant exactement à l'aplomb du point rond Limewood (cx = 166.5)
- * - Fût gothique gravé + pointe bifide en serre tribale à la base
+/* Tracé sculptural Tribal × Gothique fidèle à l'inspiration :
+ * - Aile gauche acérée avec ergot dorsal + arc concave en pointe vers le bas
+ * - Pic central gothique net au sommet du fût
+ * - Aile droite étirée au-dessus de "a référence" avec ergots tribaux fins
+ *   s'achevant en pointe de lame exactement à l'aplomb du point .com (x = 166.5)
+ * - Fût sinueux en dague gothique-tribale à épines alternées effilé jusqu'en bas
  */
-const GOTHIC_TRIBAL_T_MAIN =
-  'M 2 15.5 ' +
-  'C 6 7.5, 13 4.2, 20.5 6.4 ' +
-  'L 25.5 2 L 29.8 7 ' +
-  'C 58 4.4, 112 5.4, 152 9.4 ' +
-  'L 166.5 12.2 ' +
-  'L 152.5 15.4 ' +
-  'L 156.5 12.6 ' +
-  'C 118 10.6, 68 11.2, 36.2 14.8 ' +
-  'L 39.2 18.8 L 32 19.2 ' +
-  'C 29.4 25.8, 29 36.2, 30.8 44.6 ' +
-  'L 35.4 47.4 L 27.2 46.8 ' +
-  'L 24 52.6 L 21.8 46.6 ' +
-  'C 16.5 47.8, 12 50.6, 8 52.8 ' +
-  'C 12.6 46.2, 17 40.6, 18.8 34 ' +
-  'C 20.4 27.8, 20.6 22, 19.6 18.4 ' +
-  'L 12.6 19.2 L 16.2 14.2 ' +
-  'C 11.4 13.4, 6.6 14.2, 2 15.5 Z';
-
-/* Aile gothique-tribale effilée épousant le flanc gauche du fût */
-const GOTHIC_TRIBAL_FLOURISH =
-  'M 15.6 22.2 C 11.2 25.4, 9.2 30.2, 10.4 36.4 C 11.6 31.6, 14.2 28.4, 16.6 26.8 Z';
-
-/* Losange ogival gothique incrusté au cœur du fût (or-tilleul) */
-const GOTHIC_STEM_INLAY = 'M 25.1 20.4 L 27.3 29.4 L 24.7 38.8 L 22.6 29.4 Z';
-
-/* Nervure tribale dorée longeant la lame supérieure jusqu'à la pointe */
-const TRIBAL_BLADE_VEIN = 'M 38 10.4 C 76 8.2, 120 8.6, 159.5 12';
+const GOTHIC_TRIBAL_T_PATH =
+  'M 1.5 10.6 ' +
+  'C 6 8.2, 11.8 7.5, 16.4 5.2 ' +
+  'C 15.1 6.7, 14.3 7.5, 14.8 8.2 ' +
+  'C 18.2 8.2, 21.8 6.8, 24.8 4.4 ' +
+  'C 27.6 6.8, 30.8 8.2, 34.4 8.2 ' +
+  'C 33.8 7.3, 33 6.5, 31.8 5.4 ' +
+  'C 52 7.2, 108 7.4, 150 9.4 ' +
+  'L 166.5 10.8 ' +
+  'C 153 12.2, 134 12.6, 118 12.4 ' +
+  'C 122 13.3, 124.2 14, 125.6 15 ' +
+  'C 118 13.8, 110 12.8, 96 12.2 ' +
+  'C 72 11.4, 48 11.8, 36.2 15.2 ' +
+  'C 37.2 13.4, 36.8 11.9, 34.4 11.3 ' +
+  'C 31.4 10.6, 28.4 11.6, 27.9 13.6 ' +
+  'C 28.6 14.2, 29.5 14.5, 30.2 14.6 ' +
+  'C 28.6 17.6, 28.6 22.8, 29.8 27.4 ' +
+  'C 30.3 29.6, 30.4 31.8, 29.8 32.8 ' +
+  'C 29 32.4, 28.4 31.2, 27.9 30.2 ' +
+  'C 27.7 32.8, 28 35.4, 28.5 37.2 ' +
+  'C 29.1 36.2, 29.5 35.2, 29.9 34.2 ' +
+  'C 30.2 38.6, 28 43.2, 26.5 47.4 ' +
+  'C 25.4 50.4, 25 53.2, 24.8 55 ' +
+  'C 23.6 52, 22.8 47.8, 22.2 44.2 ' +
+  'C 21.6 41.2, 20.6 39.2, 19.6 38.2 ' +
+  'C 22.2 35.6, 23.6 32.2, 23 28.4 ' +
+  'C 22.5 25.6, 21.4 23.8, 20.6 21.6 ' +
+  'C 21.6 22.4, 22.4 23.6, 23.2 24.8 ' +
+  'C 23.5 21.2, 22.8 17.6, 20.8 14.4 ' +
+  'C 21.6 14.2, 22.4 13.9, 23 13.3 ' +
+  'C 22.4 11.5, 19.4 10.6, 16.4 11.6 ' +
+  'C 14.4 12.2, 13.4 13.6, 14 15.2 ' +
+  'C 10.2 12.2, 5.8 11.2, 1.5 10.6 Z';
 
 function BrandLogo() {
   return (
     <div className="flex flex-col group">
       <svg
-        viewBox="0 0 212 56"
+        viewBox="0 0 212 58"
         className="h-10 sm:h-11 w-auto select-none overflow-visible"
         aria-label="Ta référence.com"
       >
@@ -53,32 +59,18 @@ function BrandLogo() {
             <stop offset="56%" stopColor="#1C1914" />
             <stop offset="100%" stopColor="#1C1914" />
           </linearGradient>
-          <linearGradient id="trfGoldVein" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#C2B088" stopOpacity="0.25" />
-            <stop offset="55%" stopColor="#E4D2A6" stopOpacity="0.95" />
-            <stop offset="100%" stopColor="#C2B088" stopOpacity="0.95" />
-          </linearGradient>
         </defs>
 
-        {/* Grand T Tribal × Gothique */}
+        {/* Grand T Tribal × Gothique (dague sinueuse & aile étirée jusqu'au point .com) */}
         <path
-          d={GOTHIC_TRIBAL_T_MAIN}
+          d={GOTHIC_TRIBAL_T_PATH}
           fill="url(#trfTribalSheen)"
           className="transition-transform duration-500 ease-out origin-left group-hover:scale-[1.015]"
-        />
-        <path d={GOTHIC_TRIBAL_FLOURISH} fill="#1C1914" opacity="0.9" />
-        <path d={GOTHIC_STEM_INLAY} fill="#C2B088" />
-        <path
-          d={TRIBAL_BLADE_VEIN}
-          fill="none"
-          stroke="url(#trfGoldVein)"
-          strokeWidth="0.95"
-          strokeLinecap="round"
         />
 
         {/* Typographie signature Tanker + Satoshi */}
         <text
-          x="38"
+          x="36"
           y="42"
           fill="#1C1914"
           fontFamily="Tanker, Georgia, serif"
