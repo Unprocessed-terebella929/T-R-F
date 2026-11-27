@@ -5,35 +5,52 @@ import { Reveal } from './Reveal.jsx';
 
 const EMPTY_SLOTS = ['I', 'II', 'III'];
 
+function updateSpotlight(event) {
+  const rect = event.currentTarget.getBoundingClientRect();
+  event.currentTarget.style.setProperty('--mx', `${event.clientX - rect.left}px`);
+  event.currentTarget.style.setProperty('--my', `${event.clientY - rect.top}px`);
+}
+
 function EmptyCatalogGrid() {
   return (
     <div className="space-y-4">
       <Reveal>
         <div className="flex items-center justify-between border-y border-[#4E4634]/15 py-2.5 px-1">
-          <span className="embroidered-mark">·⊹</span>
+          <span className="embroidered-mark">
+            ·⊹ <span className="text-[#C2B088] animate-sparkle">✦</span>
+          </span>
           <p className="text-xs text-[#665E4E] text-center">
             Catalogue vierge — prêt pour votre première sélection photographique.
           </p>
-          <span className="embroidered-mark">⊹·</span>
+          <span className="embroidered-mark">
+            <span className="text-[#C2B088] animate-sparkle">✦</span> ⊹·
+          </span>
         </div>
       </Reveal>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {EMPTY_SLOTS.map((roman, index) => (
-          <Reveal key={roman} delay={index * 90}>
-            <div className="archival-card rounded-2xl p-4 flex flex-col justify-between min-h-[215px]">
-              <div className="flex items-center justify-between text-[10px] tracking-[0.2em] text-[#665E4E]">
+          <Reveal key={roman} delay={index * 95}>
+            <div
+              onMouseMove={updateSpotlight}
+              style={{ '--glint-delay': `${index * 1.8}s` }}
+              className="archival-card archival-ambient rounded-2xl p-4 flex flex-col justify-between min-h-[215px]"
+            >
+              <div className="relative z-10 flex items-center justify-between text-[10px] tracking-[0.2em] text-[#665E4E]">
                 <span>ARCHIVE {roman}</span>
                 <span className="h-1.5 w-1.5 rounded-full bg-[#C2B088] animate-archival-dot" />
               </div>
-              <div className="my-6 border-y border-dashed border-[#4E4634]/20 py-5 text-center">
-                <span className="font-display text-lg text-[#4E4634]/80">
+              <div className="relative z-10 my-6 border-y border-dashed border-[#4E4634]/20 py-5 text-center space-y-1">
+                <span className="block text-[10px] text-[#C2B088] animate-sparkle">
+                  ✦
+                </span>
+                <span className="font-display text-lg text-[#4E4634]/85">
                   Pièce à paraître
                 </span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="relative z-10 flex items-center justify-between">
                 <span className="h-1.5 w-14 rounded-full bg-[#EAE2D2]" />
-                <span className="text-[10px] tracking-[0.18em] text-[#665E4E]/70">
+                <span className="text-[10px] tracking-[0.18em] text-[#665E4E]/75">
                   ÉDITION I
                 </span>
               </div>
@@ -48,7 +65,10 @@ function EmptyCatalogGrid() {
 function ProductTile({ item, index, onOpenStudio, onAddToCart }) {
   return (
     <Reveal delay={(index % 3) * 80}>
-      <article className="archival-card rounded-2xl overflow-hidden flex flex-col h-full">
+      <article
+        onMouseMove={updateSpotlight}
+        className="archival-card rounded-2xl overflow-hidden flex flex-col h-full"
+      >
         <button
           type="button"
           onClick={() => onOpenStudio(item)}
@@ -109,10 +129,11 @@ export function BoutiqueView({ products, onAddToCart, onOpenStudio }) {
 
   return (
     <section className="space-y-6 animate-rise">
-      <div className="rounded-2xl border border-[#4E4634]/15 bg-[#FAF7F0]/88 px-5 py-5 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="bling-banner rounded-2xl border border-[#4E4634]/15 bg-[#FAF7F0]/90 px-5 py-5 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-1">
-          <p className="text-[10px] uppercase tracking-[0.22em] text-[#665E4E]">
-            Maison de sélection · Kinshasa
+          <p className="text-[10px] uppercase tracking-[0.22em] text-[#665E4E] flex items-center gap-1.5">
+            <span className="text-[#C2B088] animate-sparkle">✦</span>
+            <span>Maison de sélection · Kinshasa</span>
           </p>
           <h1 className="font-display text-2xl sm:text-3xl text-[#1C1914]">
             L’essentiel, bien choisi.

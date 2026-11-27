@@ -134,30 +134,32 @@ export default function App() {
       />
 
       <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-7">
-        {activeTab === 'boutique' && (
-          <BoutiqueView
-            products={products}
-            onAddToCart={handleAddToCart}
-            onOpenStudio={(item) => {
-              setStudioItem(item);
-              switchTab('studio');
-            }}
-          />
-        )}
-        {activeTab === 'studio' && (
-          <StudioView
-            activeItem={studioItem}
-            products={products}
-            onSelectItem={setStudioItem}
-          />
-        )}
-        {activeTab === 'suivi' && <SuiviView orders={orders} />}
-        {activeTab === 'signatures' && (
-          <SignaturesView
-            signatures={signatures}
-            onAddSignature={handleAddSignature}
-          />
-        )}
+        <div key={activeTab} className="animate-tab-enter">
+          {activeTab === 'boutique' && (
+            <BoutiqueView
+              products={products}
+              onAddToCart={handleAddToCart}
+              onOpenStudio={(item) => {
+                setStudioItem(item);
+                switchTab('studio');
+              }}
+            />
+          )}
+          {activeTab === 'studio' && (
+            <StudioView
+              activeItem={studioItem}
+              products={products}
+              onSelectItem={setStudioItem}
+            />
+          )}
+          {activeTab === 'suivi' && <SuiviView orders={orders} />}
+          {activeTab === 'signatures' && (
+            <SignaturesView
+              signatures={signatures}
+              onAddSignature={handleAddSignature}
+            />
+          )}
+        </div>
       </main>
 
       <footer className="border-t border-[#4E4634]/15 py-5 px-4 text-center">

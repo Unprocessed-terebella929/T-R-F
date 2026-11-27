@@ -7,6 +7,7 @@
   --surface-ivory: #faf7f0;
   --surface-warm: #eae2d2;
   --limewood: #c2b088;
+  --limewood-glow: #e4d2a6;
   --limewood-deep: #4e4634;
   --ink-ebony: #1c1914;
   --ink-muted: #665e4e;
@@ -69,32 +70,149 @@ body {
   letter-spacing: 0.03em;
 }
 
+/* Barre de progression dorée-tilleul en tête de page */
+.scroll-progress-gold {
+  background: linear-gradient(
+    90deg,
+    #4e4634 0%,
+    #c2b088 55%,
+    #e6d5aa 85%,
+    #c2b088 100%
+  );
+  box-shadow: 0 0 10px rgba(194, 176, 136, 0.75);
+}
+
+/* Cartes d'archives & produits avec reflet vitrine joaillière */
 .archival-card {
+  position: relative;
+  overflow: hidden;
   background-color: var(--surface-ivory);
   border: 1px solid rgba(78, 70, 52, 0.16);
   box-shadow: 0 10px 26px -18px rgba(28, 25, 20, 0.25);
-  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 240ms ease,
-    box-shadow 320ms ease;
+  transition: transform 340ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 260ms ease,
+    box-shadow 340ms ease;
+}
+
+.archival-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 30%),
+    rgba(228, 210, 166, 0.26),
+    transparent 68%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms ease;
+  z-index: 1;
+}
+
+.archival-card::after {
+  content: '';
+  position: absolute;
+  top: -120%;
+  left: -65%;
+  width: 55%;
+  height: 320%;
+  background: linear-gradient(
+    112deg,
+    transparent 35%,
+    rgba(255, 250, 236, 0.65) 48%,
+    rgba(194, 176, 136, 0.28) 52%,
+    transparent 65%
+  );
+  transform: translateX(-140%) rotate(16deg);
+  pointer-events: none;
+  z-index: 2;
 }
 
 .archival-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(78, 70, 52, 0.36);
-  box-shadow: 0 22px 38px -18px rgba(28, 25, 20, 0.3);
+  transform: translateY(-5px);
+  border-color: rgba(194, 176, 136, 0.72);
+  box-shadow:
+    0 24px 40px -18px rgba(28, 25, 20, 0.32),
+    0 0 0 1px rgba(194, 176, 136, 0.28),
+    0 0 26px -8px rgba(194, 176, 136, 0.55);
 }
 
+.archival-card:hover::before {
+  opacity: 1;
+}
+
+.archival-card:hover::after {
+  animation: luxurySweep 850ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Reflet ambiant discret sur les cartes d'archives vierges (vitrine éclairée) */
+.archival-ambient::after {
+  animation: ambientGlint 6.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  animation-delay: var(--glint-delay, 0s);
+}
+
+/* Bandeau éditorial avec liseré champagne-tilleul animé */
+.bling-banner {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 14px 32px -22px rgba(28, 25, 20, 0.26);
+}
+
+.bling-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(194, 176, 136, 0.35) 22%,
+    #e4d2a6 50%,
+    rgba(194, 176, 136, 0.35) 78%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: goldLineSlide 4.8s linear infinite;
+}
+
+/* Bouton principal avec éclat métallique diagonal au survol */
 .btn-limewood {
+  position: relative;
+  overflow: hidden;
   background-color: var(--limewood-deep);
   color: var(--surface-ivory);
-  border: 1px solid rgba(28, 25, 20, 0.25);
+  border: 1px solid rgba(194, 176, 136, 0.38);
   transition: transform 160ms ease, background-color 220ms ease,
-    box-shadow 220ms ease;
+    box-shadow 260ms ease, border-color 220ms ease;
+}
+
+.btn-limewood::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(228, 210, 166, 0.34) 48%,
+    rgba(255, 252, 244, 0.45) 52%,
+    transparent 76%
+  );
+  transform: translateX(-130%);
+  pointer-events: none;
 }
 
 .btn-limewood:hover {
   background-color: #3c3526;
-  box-shadow: 0 10px 20px -12px rgba(28, 25, 20, 0.52);
+  border-color: rgba(228, 210, 166, 0.72);
+  box-shadow:
+    0 12px 24px -12px rgba(28, 25, 20, 0.56),
+    0 0 18px -6px rgba(194, 176, 136, 0.6);
+}
+
+.btn-limewood:hover::after {
+  animation: buttonSheen 720ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .btn-limewood:active,
@@ -103,36 +221,55 @@ body {
 }
 
 .btn-vintage-ghost {
-  background-color: rgba(250, 247, 240, 0.82);
+  background-color: rgba(250, 247, 240, 0.85);
   color: var(--ink-ebony);
   border: 1px solid rgba(78, 70, 52, 0.22);
   transition: transform 160ms ease, background-color 220ms ease,
-    border-color 220ms ease;
+    border-color 220ms ease, box-shadow 220ms ease;
 }
 
 .btn-vintage-ghost:hover {
   background-color: var(--surface-warm);
-  border-color: rgba(78, 70, 52, 0.45);
+  border-color: rgba(194, 176, 136, 0.75);
+  box-shadow: 0 8px 18px -12px rgba(194, 176, 136, 0.65);
 }
 
 .embroidered-mark {
   font-size: 10px;
   letter-spacing: 0.24em;
-  color: rgba(78, 70, 52, 0.58);
+  color: rgba(78, 70, 52, 0.62);
   user-select: none;
 }
 
 /* Scroll Reveal */
 .reveal-hidden {
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateY(18px) scale(0.988);
 }
 
 .reveal-visible {
   opacity: 1;
-  transform: translateY(0);
-  transition: opacity 540ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 540ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(0) scale(1);
+  transition: opacity 560ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 560ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Transition soyeuse entre onglets & swipe */
+@keyframes tabSilkEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.992);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.animate-tab-enter {
+  animation: tabSilkEnter 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes gentleRise {
@@ -150,19 +287,97 @@ body {
   animation: gentleRise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes softPulse {
+@keyframes luxurySweep {
+  0% {
+    transform: translateX(-140%) rotate(16deg);
+  }
+  100% {
+    transform: translateX(360%) rotate(16deg);
+  }
+}
+
+@keyframes ambientGlint {
+  0%, 72%, 100% {
+    transform: translateX(-140%) rotate(16deg);
+    opacity: 0;
+  }
+  76% {
+    opacity: 0.85;
+  }
+  94% {
+    transform: translateX(360%) rotate(16deg);
+    opacity: 0;
+  }
+}
+
+@keyframes buttonSheen {
+  0% {
+    transform: translateX(-130%);
+  }
+  100% {
+    transform: translateX(130%);
+  }
+}
+
+@keyframes goldLineSlide {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes jewelSparkle {
   0%, 100% {
-    opacity: 0.38;
-    transform: scale(0.92);
+    opacity: 0.45;
+    transform: scale(0.88) rotate(0deg);
+    text-shadow: 0 0 0 rgba(194, 176, 136, 0);
   }
   50% {
     opacity: 1;
-    transform: scale(1.12);
+    transform: scale(1.18) rotate(18deg);
+    text-shadow: 0 0 10px rgba(228, 210, 166, 0.9);
+  }
+}
+
+.animate-sparkle {
+  display: inline-block;
+  animation: jewelSparkle 3.2s ease-in-out infinite;
+}
+
+@keyframes dotHalo {
+  0%, 100% {
+    opacity: 0.16;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.22);
+  }
+}
+
+.animate-dot-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: dotHalo 3.4s ease-in-out infinite;
+}
+
+@keyframes softPulse {
+  0%, 100% {
+    opacity: 0.42;
+    transform: scale(0.92);
+    box-shadow: 0 0 0 0 rgba(194, 176, 136, 0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+    box-shadow: 0 0 0 5px rgba(194, 176, 136, 0);
   }
 }
 
 .animate-archival-dot {
-  animation: softPulse 3s ease-in-out infinite;
+  animation: softPulse 2.8s ease-in-out infinite;
 }
 
 @keyframes studioOrbit {
@@ -179,4 +394,16 @@ body {
 
 .animate-studio-orbit {
   animation: studioOrbit 7s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .archival-ambient::after,
+  .bling-banner::before,
+  .animate-sparkle,
+  .animate-dot-halo,
+  .animate-archival-dot,
+  .animate-studio-orbit,
+  .animate-tab-enter {
+    animation: none !important;
+  }
 }
