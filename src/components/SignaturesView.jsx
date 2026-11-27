@@ -56,16 +56,16 @@ export function SignaturesView({ signatures, onAddSignature }) {
             className="w-full px-3.5 py-2 rounded-xl border border-[#4E4634]/20 bg-white text-xs focus:outline-none focus:border-[#4E4634]"
             required
           />
-          <div className="flex items-center justify-between pt-1">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <div className="flex items-center gap-2.5">
               {SIGNATURE_INKS.map((item) => (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => setInk(item.hex)}
-                  className={`w-5 h-5 rounded-full border-2 transition-transform ${
+                  className={`w-7 h-7 rounded-full border-2 transition-transform ${
                     ink === item.hex
-                      ? 'border-[#C2B088] scale-110'
+                      ? 'border-[#C2B088] scale-110 shadow-sm'
                       : 'border-transparent'
                   }`}
                   style={{ backgroundColor: item.hex }}
@@ -76,7 +76,7 @@ export function SignaturesView({ signatures, onAddSignature }) {
             </div>
             <button
               type="submit"
-              className="px-4 py-2 rounded-full text-xs font-medium btn-limewood"
+              className="px-5 py-2.5 min-h-[40px] rounded-full text-xs font-medium btn-limewood"
             >
               Apposer
             </button>

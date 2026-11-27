@@ -36,7 +36,7 @@ export default function App() {
   const [cartOpen, setCartOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(() => isPrivateImportHash());
   const [showTop, setShowTop] = useState(false);
-  const touchStartX = useRef(0);
+  const touchStart = useRef({ x: 0, y: 0, ignored: false });
 
   useEffect(() => {
     const onHashChange = () => setImportOpen(isPrivateImportHash());
@@ -98,15 +98,31 @@ export default function App() {
     writeStorage(STORAGE_KEYS.SIGNATURES, nextList);
   };
 
-  const handleTouchEnd = (endX) => {
-    const delta = endX - touchStartX.current;
-    if (Math.abs(delta) < 65) {
+  const handleTouchStart = (e) => {
+    const t = e.touches[0];
+    const target = e.target;
+    const ignored = Boolean(
+      target &&
+        target.closest &&
+        target.closest('input, select, textarea, button, .no-scrollbar, [role="dialog"]')
+    );
+    touchStart.current = { x: t.clientX, y: t.clientY, ignored };
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStart.current.ignored || cartOpen || importOpen) {
+      return;
+    }
+    const t = e.changedTouches[0];
+    const deltaX = t.clientX - touchStart.current.x;
+    const deltaY = t.clientY - touchStart.current.y;
+    if (Math.abs(deltaX) < 72 || Math.abs(deltaX) < Math.abs(deltaY) * 1.6) {
       return;
     }
     const idx = TAB_ORDER.indexOf(activeTab);
-    if (delta < 0 && idx < TAB_ORDER.length - 1) {
+    if (deltaX < 0 && idx < TAB_ORDER.length - 1) {
       switchTab(TAB_ORDER[idx + 1]);
-    } else if (delta > 0 && idx > 0) {
+    } else if (deltaX > 0 && idx > 0) {
       switchTab(TAB_ORDER[idx - 1]);
     }
   };
@@ -120,11 +136,9 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen vintage-sand-bg flex flex-col"
-      onTouchStart={(e) => {
-        touchStartX.current = e.touches[0].clientX;
-      }}
-      onTouchEnd={(e) => handleTouchEnd(e.changedTouches[0].clientX)}
+      className="min-h-[100dvh] vintage-sand-bg flex flex-col"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <Header
         activeTab={activeTab}
@@ -133,7 +147,7 @@ export default function App() {
         onOpenCart={() => setCartOpen(true)}
       />
 
-      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-7">
+      <main className="flex-1 w-full max-w-6xl xl:max-w-7xl 2xl:max-w-[1440px] mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-7 lg:py-9">
         <div key={activeTab} className="animate-tab-enter">
           {activeTab === 'boutique' && (
             <BoutiqueView
@@ -162,14 +176,14 @@ export default function App() {
         </div>
       </main>
 
-      <footer className="border-t border-[#4E4634]/15 py-5 px-4 text-center">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#665E4E]">
+      <footer className="border-t border-[#4E4634]/15 py-5 px-3.5 sm:px-6 lg:px-8 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-center">
+        <div className="max-w-6xl xl:max-w-7xl 2xl:max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#665E4E]">
           <span>© 2026 Ta référence.com — {BRAND_SLOGAN}</span>
           <a
             href={COCKPIT_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-[#1C1914] transition-colors"
+            className="hover:text-[#1C1914] transition-colors py-1"
           >
             Accès Cockpit privé ↗
           </a>
@@ -180,7 +194,7 @@ export default function App() {
         <button
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-5 right-5 z-30 p-3 rounded-full btn-limewood shadow-lg animate-rise"
+          className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-[max(1.25rem,env(safe-area-inset-right))] z-30 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full btn-limewood shadow-lg animate-rise"
           aria-label="Remonter en haut"
         >
           <ArrowUpIcon className="w-4 h-4" />

@@ -8,15 +8,25 @@ export function CartDrawer({ isOpen, items, onClose, onRemove, onCheckout }) {
   const total = items.reduce((sum, item) => sum + Number(item.price || 0), 0);
 
   return (
-    <div className="fixed inset-0 z-40 bg-[#1C1914]/55 backdrop-blur-sm flex justify-end">
-      <aside className="w-full max-w-md bg-[#FAF7F0] h-full p-5 flex flex-col justify-between shadow-2xl animate-rise">
-        <div className="space-y-4 overflow-y-auto">
-          <div className="flex items-center justify-between border-b border-[#4E4634]/15 pb-3">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Panier"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+      className="fixed inset-0 z-40 bg-[#1C1914]/55 backdrop-blur-sm flex justify-end"
+    >
+      <aside className="w-full sm:max-w-md bg-[#FAF7F0] h-[100dvh] p-4 sm:p-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))] flex flex-col justify-between gap-4 shadow-2xl animate-rise">
+        <div className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto pr-0.5">
+          <div className="flex items-center justify-between border-b border-[#4E4634]/15 pb-3 shrink-0">
             <h2 className="font-display text-2xl">Votre sélection</h2>
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-full btn-vintage-ghost"
+              className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-full btn-vintage-ghost"
               aria-label="Fermer le panier"
             >
               <CloseIcon className="w-4 h-4" />

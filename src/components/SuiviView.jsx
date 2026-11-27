@@ -30,7 +30,7 @@ export function SuiviView({ orders }) {
                 <strong>{order.amount} $</strong>
               </span>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-1 min-[380px]:grid-cols-2 md:grid-cols-4 gap-2.5">
               {DELIVERY_SPHERES.map((s) => {
                 const reached = order.step >= s.step;
                 return (

@@ -98,21 +98,26 @@ export function OneTimeImportPanel({ products, onSaveProducts, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1C1914]/65 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl archival-card p-6 space-y-5 animate-rise">
-        <div className="flex items-start justify-between gap-4 border-b border-[#4E4634]/15 pb-4">
-          <div>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Canal privé d'importation"
+      className="fixed inset-0 z-50 bg-[#1C1914]/65 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4"
+    >
+      <div className="w-full max-w-3xl max-h-[90dvh] overflow-y-auto rounded-2xl archival-card p-4 sm:p-6 space-y-5 animate-rise">
+        <div className="flex items-start justify-between gap-3 border-b border-[#4E4634]/15 pb-4">
+          <div className="min-w-0">
             <p className="text-[10px] uppercase tracking-[0.22em] text-[#665E4E]">
               Canal privé · Usage unique
             </p>
-            <h2 className="font-display text-2xl text-[#1C1914]">
+            <h2 className="font-display text-xl sm:text-2xl text-[#1C1914]">
               Importation initiale du catalogue
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-full btn-vintage-ghost"
+            className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-full btn-vintage-ghost shrink-0"
             aria-label="Fermer"
           >
             <CloseIcon className="w-4 h-4" />

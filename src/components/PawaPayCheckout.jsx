@@ -76,7 +76,7 @@ export function PawaPayCheckout({ total, onSuccessOrder }) {
             key={op.id}
             type="button"
             onClick={() => setOperator(op.id)}
-            className={`py-2 px-2 rounded-xl text-[11px] font-medium ${
+            className={`py-2.5 px-1.5 min-h-[40px] rounded-xl text-[11px] font-medium truncate ${
               operator === op.id ? 'btn-limewood' : 'btn-vintage-ghost'
             }`}
           >
@@ -85,19 +85,20 @@ export function PawaPayCheckout({ total, onSuccessOrder }) {
         ))}
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 min-w-0">
         <input
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          placeholder="0812345678 ou 243812345678"
-          className="flex-1 px-3 py-2 rounded-xl border border-[#4E4634]/25 text-xs bg-white"
+          placeholder="0812345678 ou 243..."
+          className="flex-1 min-w-0 px-3 py-2.5 min-h-[42px] rounded-xl border border-[#4E4634]/25 text-xs bg-white"
           required
         />
         <select
           value={currency}
           onChange={(e) => setCurrency(e.target.value)}
-          className="px-2.5 py-2 rounded-xl border border-[#4E4634]/25 text-xs bg-white font-bold"
+          aria-label="Devise"
+          className="shrink-0 px-2.5 py-2.5 min-h-[42px] rounded-xl border border-[#4E4634]/25 text-xs bg-white font-bold"
         >
           <option value="USD">USD</option>
           <option value="CDF">CDF</option>

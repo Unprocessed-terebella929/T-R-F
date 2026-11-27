@@ -42,11 +42,11 @@ export function StudioView({ activeItem, products, onSelectItem }) {
 
   return (
     <section className="space-y-4 animate-rise">
-      <div className="archival-card rounded-2xl p-5 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+      <div className="archival-card rounded-2xl p-4 sm:p-6 lg:p-8 grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 lg:gap-8 items-center">
         <div
           onMouseMove={handlePointerMove}
           onMouseLeave={() => setTilt({ x: 0, y: 0 })}
-          className="aspect-[4/5] rounded-xl bg-[#EAE2D2] overflow-hidden flex items-center justify-center"
+          className="w-full max-w-sm mx-auto md:max-w-none aspect-[4/5] max-h-[55dvh] md:max-h-[65dvh] rounded-xl bg-[#EAE2D2] overflow-hidden flex items-center justify-center"
         >
           <img
             src={target.image}
@@ -58,9 +58,9 @@ export function StudioView({ activeItem, products, onSelectItem }) {
           />
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 min-w-0">
           <span className="embroidered-mark">·⊹ STUDIO ⊹·</span>
-          <h2 className="font-display text-3xl text-[#1C1914]">
+          <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-[#1C1914] break-words">
             {target.title}
           </h2>
           <p className="text-sm font-bold text-[#4E4634]">
@@ -71,7 +71,7 @@ export function StudioView({ activeItem, products, onSelectItem }) {
             <button
               type="button"
               onClick={() => setAngle((prev) => prev + 90)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium btn-vintage-ghost"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[40px] rounded-full text-xs font-medium btn-vintage-ghost"
             >
               <RotateIcon className="w-3.5 h-3.5" />
               <span>Pivoter 90°</span>
@@ -80,7 +80,7 @@ export function StudioView({ activeItem, products, onSelectItem }) {
             <button
               type="button"
               onClick={() => setOrbit((prev) => !prev)}
-              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium ${
+              className={`inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[40px] rounded-full text-xs font-medium ${
                 orbit ? 'btn-limewood' : 'btn-vintage-ghost'
               }`}
             >
@@ -90,7 +90,7 @@ export function StudioView({ activeItem, products, onSelectItem }) {
           </div>
 
           <label className="flex items-center gap-3 text-xs text-[#665E4E] pt-1">
-            <span>Zoom</span>
+            <span className="shrink-0">Zoom ({Math.round(zoom * 100)}%)</span>
             <input
               type="range"
               min="1"
@@ -98,7 +98,7 @@ export function StudioView({ activeItem, products, onSelectItem }) {
               step="0.05"
               value={zoom}
               onChange={(e) => setZoom(Number(e.target.value))}
-              className="w-32 accent-[#4E4634]"
+              className="w-full max-w-[200px] accent-[#4E4634]"
             />
           </label>
         </div>

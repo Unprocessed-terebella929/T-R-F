@@ -45,10 +45,11 @@ const GOTHIC_TRIBAL_T_PATH =
 
 function BrandLogo() {
   return (
-    <div className="flex flex-col group">
+    <div className="flex flex-col group min-w-0">
       <svg
         viewBox="0 0 212 58"
-        className="h-10 sm:h-11 w-auto select-none overflow-visible"
+        preserveAspectRatio="xMinYMid meet"
+        className="self-start h-8 sm:h-10 lg:h-11 w-auto select-none overflow-visible"
         aria-label="Ta référence.com"
       >
         <defs>
@@ -102,9 +103,11 @@ function BrandLogo() {
           com
         </text>
       </svg>
-      <span className="text-[10px] tracking-[0.2em] uppercase text-[#665E4E] pl-1 flex items-center gap-1.5">
+      <span className="text-[9px] sm:text-[10px] tracking-[0.14em] sm:tracking-[0.2em] uppercase text-[#665E4E] pl-0.5 flex items-center gap-1.5 truncate">
         <span>{BRAND_SLOGAN}</span>
-        <span className="text-[#C2B088] text-[9px] animate-sparkle">✦</span>
+        <span className="text-[#C2B088] text-[9px] animate-sparkle shrink-0">
+          ✦
+        </span>
       </span>
     </div>
   );
@@ -129,7 +132,7 @@ export function Header({ activeTab, onChangeTab, cartCount, onOpenCart }) {
 
   return (
     <header
-      className={`sticky top-0 z-30 border-b border-[#4E4634]/15 bg-[#F4EFE4]/92 backdrop-blur-md transition-shadow duration-300 ${
+      className={`sticky top-0 z-30 pt-[env(safe-area-inset-top)] border-b border-[#4E4634]/15 bg-[#F4EFE4]/92 backdrop-blur-md transition-shadow duration-300 ${
         scrolled ? 'shadow-md shadow-[#1C1914]/8' : ''
       }`}
     >
@@ -141,22 +144,25 @@ export function Header({ activeTab, onChangeTab, cartCount, onOpenCart }) {
         />
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+      <div className="max-w-6xl xl:max-w-7xl 2xl:max-w-[1440px] mx-auto px-3.5 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-3">
         <button
           type="button"
           onClick={() => onChangeTab('boutique')}
-          className="text-left focus:outline-none"
+          className="text-left focus:outline-none min-w-0 shrink"
         >
           <BrandLogo />
         </button>
 
-        <nav className="hidden md:flex items-center gap-1.5">
+        <nav
+          aria-label="Navigation principale"
+          className="hidden md:flex items-center gap-1.5 shrink-0"
+        >
           {NAV_TABS.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => onChangeTab(tab.id)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+              className={`px-3.5 py-2 rounded-full text-xs font-medium transition-all duration-200 ${
                 activeTab === tab.id
                   ? 'btn-limewood'
                   : 'text-[#1C1914]/80 hover:bg-[#EAE2D2]/85 hover:text-[#1C1914]'
@@ -167,12 +173,12 @@ export function Header({ activeTab, onChangeTab, cartCount, onOpenCart }) {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <a
             href={COCKPIT_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-medium btn-vintage-ghost"
+            className="hidden sm:inline-flex items-center gap-1 px-3 py-2 rounded-full text-[11px] font-medium btn-vintage-ghost"
           >
             <span>Cockpit</span>
             <ArrowOutIcon className="w-3.5 h-3.5 text-[#4E4634]" />
@@ -181,10 +187,10 @@ export function Header({ activeTab, onChangeTab, cartCount, onOpenCart }) {
           <button
             type="button"
             onClick={onOpenCart}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium btn-limewood"
+            className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-2 min-h-[38px] rounded-full text-xs font-medium btn-limewood"
             aria-label="Ouvrir le panier"
           >
-            <BagIcon className="w-3.5 h-3.5" />
+            <BagIcon className="w-3.5 h-3.5 shrink-0" />
             <span>Panier</span>
             {cartCount > 0 && (
               <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-[#C2B088] text-[#1C1914] text-[10px] font-bold animate-sparkle">
@@ -195,20 +201,23 @@ export function Header({ activeTab, onChangeTab, cartCount, onOpenCart }) {
         </div>
       </div>
 
-      <div className="md:hidden border-t border-[#4E4634]/10 px-4 py-2 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar">
+      <nav
+        aria-label="Navigation mobile"
+        className="md:hidden border-t border-[#4E4634]/10 px-2.5 py-1.5 grid grid-cols-4 gap-1"
+      >
         {NAV_TABS.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => onChangeTab(tab.id)}
-            className={`px-3 py-1 rounded-full text-[11px] font-medium whitespace-nowrap transition-all ${
+            className={`px-1.5 py-2 rounded-full text-[11px] font-medium text-center truncate transition-all ${
               activeTab === tab.id ? 'btn-limewood' : 'text-[#4E4634]'
             }`}
           >
             {tab.label}
           </button>
         ))}
-      </div>
+      </nav>
     </header>
   );
 }
