@@ -12,6 +12,10 @@
   --ink-muted: #665e4e;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -21,6 +25,35 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Barres de défilement discrètes aux teintes Limewood */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-parchment);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(78, 70, 52, 0.28);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(78, 70, 52, 0.5);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Arrière-plan vintage sablé organique (13 %) — sans hachure */
 .vintage-sand-bg {
   background-color: var(--bg-parchment);
   background-image:
@@ -40,19 +73,18 @@ body {
   background-color: var(--surface-ivory);
   border: 1px solid rgba(78, 70, 52, 0.16);
   box-shadow: 0 10px 26px -18px rgba(28, 25, 20, 0.25);
-  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 220ms ease,
-    box-shadow 300ms ease;
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 240ms ease,
+    box-shadow 320ms ease;
 }
 
 .archival-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
   border-color: rgba(78, 70, 52, 0.36);
-  box-shadow: 0 20px 36px -18px rgba(28, 25, 20, 0.3);
+  box-shadow: 0 22px 38px -18px rgba(28, 25, 20, 0.3);
 }
 
-.btn-limewood,
-.bg-cream-highlight {
+.btn-limewood {
   background-color: var(--limewood-deep);
   color: var(--surface-ivory);
   border: 1px solid rgba(28, 25, 20, 0.25);
@@ -60,39 +92,47 @@ body {
     box-shadow 220ms ease;
 }
 
-.btn-limewood:hover,
-.bg-cream-highlight:hover {
+.btn-limewood:hover {
   background-color: #3c3526;
-  box-shadow: 0 10px 20px -12px rgba(28, 25, 20, 0.5);
+  box-shadow: 0 10px 20px -12px rgba(28, 25, 20, 0.52);
 }
 
 .btn-limewood:active,
-.btn-vintage-ghost:active,
-.click-tactile:active {
-  transform: scale(0.97);
+.btn-vintage-ghost:active {
+  transform: scale(0.96);
 }
 
-.btn-vintage-ghost,
-.bg-latte-soft {
-  background-color: rgba(250, 247, 240, 0.8);
+.btn-vintage-ghost {
+  background-color: rgba(250, 247, 240, 0.82);
   color: var(--ink-ebony);
   border: 1px solid rgba(78, 70, 52, 0.22);
   transition: transform 160ms ease, background-color 220ms ease,
     border-color 220ms ease;
 }
 
-.btn-vintage-ghost:hover,
-.bg-latte-soft:hover {
+.btn-vintage-ghost:hover {
   background-color: var(--surface-warm);
   border-color: rgba(78, 70, 52, 0.45);
 }
 
-.embroidered-mark,
-.embroidered-flank {
+.embroidered-mark {
   font-size: 10px;
   letter-spacing: 0.24em;
   color: rgba(78, 70, 52, 0.58);
   user-select: none;
+}
+
+/* Scroll Reveal */
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 540ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 540ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes gentleRise {
@@ -107,18 +147,36 @@ body {
 }
 
 .animate-rise {
-  animation: gentleRise 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: gentleRise 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes softPulse {
   0%, 100% {
-    opacity: 0.4;
+    opacity: 0.38;
+    transform: scale(0.92);
   }
   50% {
-    opacity: 0.95;
+    opacity: 1;
+    transform: scale(1.12);
   }
 }
 
 .animate-archival-dot {
-  animation: softPulse 3.2s ease-in-out infinite;
+  animation: softPulse 3s ease-in-out infinite;
+}
+
+@keyframes studioOrbit {
+  0% {
+    transform: perspective(900px) rotateY(-8deg) rotateX(2deg);
+  }
+  50% {
+    transform: perspective(900px) rotateY(8deg) rotateX(-2deg);
+  }
+  100% {
+    transform: perspective(900px) rotateY(-8deg) rotateX(2deg);
+  }
+}
+
+.animate-studio-orbit {
+  animation: studioOrbit 7s ease-in-out infinite;
 }

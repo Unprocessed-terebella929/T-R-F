@@ -7,7 +7,9 @@ export function SealedNotice({ count }) {
   return (
     <div className="rounded-xl bg-[#EAE2D2]/80 p-6 text-center space-y-3">
       <ShieldIcon className="w-8 h-8 mx-auto text-[#4E4634]" />
-      <h3 className="font-display text-xl">Canal initial définitivement scellé</h3>
+      <h3 className="font-display text-xl">
+        Canal initial définitivement scellé
+      </h3>
       <p className="text-xs text-[#665E4E] max-w-md mx-auto">
         Vos {count} photo(s) sont publiées sur la vitrine. Toute gestion future
         passe exclusivement par votre Cockpit privé.
@@ -24,7 +26,13 @@ export function SealedNotice({ count }) {
   );
 }
 
-export function UnlockForm({ accessKey, setAccessKey, authError, busy, onUnlock }) {
+export function UnlockForm({
+  accessKey,
+  setAccessKey,
+  authError,
+  busy,
+  onUnlock
+}) {
   return (
     <form onSubmit={onUnlock} className="max-w-sm mx-auto py-6 space-y-4">
       <div className="flex items-center gap-2 text-xs text-[#4E4634]">

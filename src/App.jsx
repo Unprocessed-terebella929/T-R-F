@@ -6,6 +6,7 @@ import { SuiviView } from './components/SuiviView.jsx';
 import { SignaturesView } from './components/SignaturesView.jsx';
 import { CartDrawer } from './components/CartDrawer.jsx';
 import { OneTimeImportPanel } from './components/OneTimeImportPanel.jsx';
+import { ArrowUpIcon } from './components/Icons.jsx';
 import { BRAND_SLOGAN, COCKPIT_URL, NAV_TABS } from './data/storeCatalog.js';
 import {
   STORAGE_KEYS,
@@ -34,13 +35,24 @@ export default function App() {
   const [studioItem, setStudioItem] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(() => isPrivateImportHash());
+  const [showTop, setShowTop] = useState(false);
   const touchStartX = useRef(0);
 
   useEffect(() => {
     const onHashChange = () => setImportOpen(isPrivateImportHash());
+    const onScroll = () => setShowTop(window.scrollY > 260);
     window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('hashchange', onHashChange);
+      window.removeEventListener('scroll', onScroll);
+    };
   }, []);
+
+  const switchTab = (tabId) => {
+    setActiveTab(tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const saveProducts = (nextList) => {
     setProducts(nextList);
@@ -77,7 +89,7 @@ export default function App() {
     setCart([]);
     writeStorage(STORAGE_KEYS.CART, []);
     setCartOpen(false);
-    setActiveTab('suivi');
+    switchTab('suivi');
   };
 
   const handleAddSignature = (entry) => {
@@ -93,9 +105,9 @@ export default function App() {
     }
     const idx = TAB_ORDER.indexOf(activeTab);
     if (delta < 0 && idx < TAB_ORDER.length - 1) {
-      setActiveTab(TAB_ORDER[idx + 1]);
+      switchTab(TAB_ORDER[idx + 1]);
     } else if (delta > 0 && idx > 0) {
-      setActiveTab(TAB_ORDER[idx - 1]);
+      switchTab(TAB_ORDER[idx - 1]);
     }
   };
 
@@ -116,7 +128,7 @@ export default function App() {
     >
       <Header
         activeTab={activeTab}
-        onChangeTab={setActiveTab}
+        onChangeTab={switchTab}
         cartCount={cart.length}
         onOpenCart={() => setCartOpen(true)}
       />
@@ -128,12 +140,16 @@ export default function App() {
             onAddToCart={handleAddToCart}
             onOpenStudio={(item) => {
               setStudioItem(item);
-              setActiveTab('studio');
+              switchTab('studio');
             }}
           />
         )}
         {activeTab === 'studio' && (
-          <StudioView activeItem={studioItem} products={products} />
+          <StudioView
+            activeItem={studioItem}
+            products={products}
+            onSelectItem={setStudioItem}
+          />
         )}
         {activeTab === 'suivi' && <SuiviView orders={orders} />}
         {activeTab === 'signatures' && (
@@ -157,6 +173,17 @@ export default function App() {
           </a>
         </div>
       </footer>
+
+      {showTop && (
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-5 right-5 z-30 p-3 rounded-full btn-limewood shadow-lg animate-rise"
+          aria-label="Remonter en haut"
+        >
+          <ArrowUpIcon className="w-4 h-4" />
+        </button>
+      )}
 
       <CartDrawer
         isOpen={cartOpen}

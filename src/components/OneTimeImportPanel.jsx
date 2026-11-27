@@ -161,7 +161,9 @@ export function OneTimeImportPanel({ products, onSaveProducts, onClose }) {
               </label>
             </div>
 
-            {note && <p className="text-xs text-[#4E4634] font-medium">{note}</p>}
+            {note && (
+              <p className="text-xs text-[#4E4634] font-medium">{note}</p>
+            )}
 
             {drafts.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1">
@@ -179,8 +181,8 @@ export function OneTimeImportPanel({ products, onSaveProducts, onClose }) {
             {drafts.length > 0 && (
               <div className="rounded-xl border border-[#C2B088] bg-[#FAF7F0] p-4 space-y-3">
                 <p className="text-xs font-bold text-[#1C1914]">
-                  Ces {drafts.length} photo(s) suffisent-elles pour votre vitrine
-                  initiale ?
+                  Ces {drafts.length} photo(s) suffisent-elles pour votre
+                  vitrine initiale ?
                 </p>
                 <p className="text-[11px] text-[#665E4E]">
                   Une fois scellé, ce canal privé se ferme définitivement et la

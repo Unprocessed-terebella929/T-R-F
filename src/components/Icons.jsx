@@ -33,6 +33,15 @@ export function ArrowOutIcon({ className }) {
   );
 }
 
+export function ArrowUpIcon({ className }) {
+  return (
+    <BaseIcon className={className}>
+      <path d="M12 19V5" />
+      <path d="m6 11 6-6 6 6" />
+    </BaseIcon>
+  );
+}
+
 export function SearchIcon({ className }) {
   return (
     <BaseIcon className={className}>
@@ -101,6 +110,15 @@ export function RotateIcon({ className }) {
     <BaseIcon className={className}>
       <path d="M21 12a9 9 0 1 1-3-6.7" />
       <path d="M21 3v6h-6" />
+    </BaseIcon>
+  );
+}
+
+export function OrbitIcon({ className }) {
+  return (
+    <BaseIcon className={className}>
+      <circle cx="12" cy="12" r="3" />
+      <ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(-24 12 12)" />
     </BaseIcon>
   );
 }

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { BRAND_SLOGAN, COCKPIT_URL, NAV_TABS } from '../data/storeCatalog.js';
 import { ArrowOutIcon, BagIcon } from './Icons.jsx';
 
@@ -44,11 +45,20 @@ function BrandLogo() {
 }
 
 export function Header({ activeTab, onChangeTab, cartCount, onOpenCart }) {
-  const barCls =
-    'sticky top-0 z-30 border-b border-[#4E4634]/15 bg-[#F4EFE4]/95 backdrop-blur-md';
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
-    <header className={barCls}>
+    <header
+      className={`sticky top-0 z-30 border-b border-[#4E4634]/15 bg-[#F4EFE4]/92 backdrop-blur-md transition-shadow duration-300 ${
+        scrolled ? 'shadow-md shadow-[#1C1914]/5' : ''
+      }`}
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
         <button
           type="button"
@@ -103,7 +113,7 @@ export function Header({ activeTab, onChangeTab, cartCount, onOpenCart }) {
         </div>
       </div>
 
-      <div className="md:hidden border-t border-[#4E4634]/10 px-4 py-2 flex items-center justify-between gap-1 overflow-x-auto">
+      <div className="md:hidden border-t border-[#4E4634]/10 px-4 py-2 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar">
         {NAV_TABS.map((tab) => (
           <button
             key={tab.id}
