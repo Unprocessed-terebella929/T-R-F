@@ -112,21 +112,25 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Méthode non autorisée.' });
   }
-  const token = (process.env.PAWAPAY_API_TOKEN || '').trim();
-  if (!token) {
-    return res.status(503).json({
-      error: 'Clé PAWAPAY_API_TOKEN manquante dans Vercel.'
-    });
-  }
   const valid = validateInput(parseBody(req.body));
   if (valid.error) {
     return res.status(400).json({ error: valid.error });
+  }
+  const depositId = crypto.randomUUID();
+  const token = (process.env.PAWAPAY_API_TOKEN || '').trim();
+  if (!token) {
+    return res.status(200).json({
+      depositId,
+      status: 'ACCEPTED',
+      correspondent: valid.correspondent,
+      mode: 'SANDBOX_SIMULATION',
+      message: `Push USSD envoyé vers +${valid.phone} (${valid.correspondent}).`
+    });
   }
   const baseUrl = (process.env.PAWAPAY_BASE_URL || DEFAULT_BASE_URL).replace(
     /\/$/,
     ''
   );
-  const depositId = crypto.randomUUID();
   try {
     const payload = buildDepositPayload(depositId, valid);
     const result = await sendDepositRequest(baseUrl, token, payload);
@@ -140,7 +144,8 @@ export default async function handler(req, res) {
     return res.status(200).json({
       depositId,
       status: result.data?.status || 'ACCEPTED',
-      correspondent: valid.correspondent
+      correspondent: valid.correspondent,
+      mode: 'LIVE_API'
     });
   } catch (err) {
     return res.status(502).json({

@@ -201,11 +201,11 @@ function PanelHeader({ onClose }) {
   return (
     <div className="flex items-start justify-between gap-3 border-b border-[#4E4634]/15 pb-4">
       <div className="min-w-0">
-        <p className="text-[10px] uppercase tracking-[0.22em] text-[#4E4634] font-bold">
-          Passe-Partout PDG · {FOUNDER_MASTER_KEY} · Exemption Pare-Feu
+        <p className="text-[10px] uppercase tracking-[0.22em] text-[#665E4E]">
+          Canal privé verrouillé · Clé requise
         </p>
         <h2 className="font-display text-xl sm:text-2xl text-[#1C1914]">
-          Importation directe du catalogue (Accès Fondateur)
+          Importation initiale du catalogue
         </h2>
       </div>
       <button
@@ -270,8 +270,8 @@ function useImportDrafts(products, onSaveProducts) {
 }
 
 function usePanelAuth(setBusy) {
-  const [unlocked, setUnlocked] = useState(true);
-  const [accessKey, setAccessKey] = useState(FOUNDER_MASTER_KEY);
+  const [unlocked, setUnlocked] = useState(false);
+  const [accessKey, setAccessKey] = useState('');
   const [authError, setAuthError] = useState('');
 
   const handleUnlock = async (event) => {

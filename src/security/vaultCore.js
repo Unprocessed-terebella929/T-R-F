@@ -61,8 +61,8 @@ export function unsealInitialImportFounder() {
 
 export async function verifyPrivateKey(code) {
   const clean = String(code || '').trim().toUpperCase();
-  if (!clean || clean === FOUNDER_MASTER_KEY || clean === 'PDG-2026') {
-    return { ok: true, role: 'pdg_founder', founder: true };
+  if (!clean) {
+    throw new Error('Veuillez saisir votre clé d’accès.');
   }
   const response = await fetch('/api/auth-gate', {
     method: 'POST',
