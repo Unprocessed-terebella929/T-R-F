@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 
 const TIMEOUT_MS = 10000;
+const BUCKET_PATH = '/storage/v1/object/trf-state/main.json';
 const ALLOWED_ORIGINS = [
   'https://tareference.click',
   'https://www.tareference.click',
@@ -52,47 +53,46 @@ function readSupabaseConfig() {
   };
 }
 
-function buildSupabaseHeaders(key, extra = {}) {
-  const headers = { apikey: key, ...extra };
-  if (key.startsWith('eyJ')) {
-    headers.Authorization = `Bearer ${key}`;
-  }
-  return headers;
+function storageHeaders(key, extra = {}) {
+  return {
+    apikey: key,
+    Authorization: `Bearer ${key}`,
+    ...extra
+  };
 }
 
 async function fetchStoreState(cfg) {
-  const endpoint =
-    `${cfg.url}/rest/v1/trf_store_state?id=eq.main&select=payload,updated_at`;
-  const resp = await fetch(endpoint, {
-    headers: buildSupabaseHeaders(cfg.key),
+  const resp = await fetch(`${cfg.url}${BUCKET_PATH}`, {
+    method: 'GET',
+    headers: storageHeaders(cfg.key),
     signal: AbortSignal.timeout(TIMEOUT_MS)
   });
-  if (!resp.ok) {
-    throw new Error('Lecture Supabase impossible.');
+  if (resp.status === 404) {
+    return { payload: null, updatedAt: null };
   }
-  const rows = await resp.json();
-  return rows[0] || { payload: null, updated_at: null };
+  if (!resp.ok) {
+    throw new Error('Lecture Supabase Storage impossible.');
+  }
+  const payload = await resp.json();
+  return { payload, updatedAt: payload?.updatedAt || null };
 }
 
 async function upsertStoreState(cfg, payload) {
-  const endpoint = `${cfg.url}/rest/v1/trf_store_state`;
-  const resp = await fetch(endpoint, {
+  const updatedAt = new Date().toISOString();
+  const body = JSON.stringify({ ...payload, updatedAt });
+  const resp = await fetch(`${cfg.url}${BUCKET_PATH}`, {
     method: 'POST',
-    headers: buildSupabaseHeaders(cfg.key, {
+    headers: storageHeaders(cfg.key, {
       'Content-Type': 'application/json',
-      Prefer: 'resolution=merge-duplicates,return=representation'
+      'x-upsert': 'true'
     }),
-    body: JSON.stringify({
-      id: 'main',
-      payload,
-      updated_at: new Date().toISOString()
-    }),
+    body,
     signal: AbortSignal.timeout(TIMEOUT_MS)
   });
   if (!resp.ok) {
-    throw new Error('Écriture Supabase impossible.');
+    throw new Error('Écriture Supabase Storage impossible.');
   }
-  return resp.json();
+  return updatedAt;
 }
 
 function verifyBridgeAuth(req) {
@@ -111,11 +111,11 @@ function mergeClientEvent(current, event) {
     orders: [],
     signatures: [],
     movements: [],
+    snapshots: [],
     sealed: false
   };
   if (event.type === 'order' && event.item) {
-    const orders = [event.item, ...(base.orders || [])].slice(0, 200);
-    return { ...base, orders };
+    return { ...base, orders: [event.item, ...(base.orders || [])].slice(0, 200) };
   }
   if (event.type === 'signature' && event.item) {
     const signatures = [event.item, ...(base.signatures || [])].slice(0, 100);
@@ -126,17 +126,13 @@ function mergeClientEvent(current, event) {
 
 async function handleGet(cfg, res) {
   if (!cfg.url || !cfg.key) {
-    return res.status(200).json({
-      mode: 'local',
-      synced: false,
-      payload: null
-    });
+    return res.status(200).json({ mode: 'local', synced: false, payload: null });
   }
   const row = await fetchStoreState(cfg);
   return res.status(200).json({
     mode: 'cloud',
     synced: true,
-    updatedAt: row.updated_at,
+    updatedAt: row.updatedAt,
     payload: row.payload
   });
 }
@@ -145,28 +141,19 @@ async function handlePost(req, cfg, res) {
   const body = parseBody(req.body);
   const action = String(req.query?.action || body?.action || 'sync');
   if (!cfg.url || !cfg.key) {
-    return res.status(200).json({
-      ok: true,
-      mode: 'local',
-      persisted: false
-    });
+    return res.status(200).json({ ok: true, mode: 'local', persisted: false });
   }
   if (action === 'client-event') {
     const row = await fetchStoreState(cfg);
     const merged = mergeClientEvent(row.payload, body);
-    await upsertStoreState(cfg, merged);
-    return res.status(200).json({ ok: true, mode: 'cloud', persisted: true });
+    const updatedAt = await upsertStoreState(cfg, merged);
+    return res.status(200).json({ ok: true, mode: 'cloud', persisted: true, updatedAt });
   }
   if (!verifyBridgeAuth(req)) {
     return res.status(401).json({ error: 'Clé de pont non autorisée.' });
   }
-  await upsertStoreState(cfg, body.payload || body);
-  return res.status(200).json({
-    ok: true,
-    mode: 'cloud',
-    persisted: true,
-    updatedAt: new Date().toISOString()
-  });
+  const updatedAt = await upsertStoreState(cfg, body.payload || body);
+  return res.status(200).json({ ok: true, mode: 'cloud', persisted: true, updatedAt });
 }
 
 export default async function handler(req, res) {
