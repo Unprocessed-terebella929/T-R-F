@@ -3,25 +3,37 @@ import { LockIcon, ShieldIcon, TrashIcon } from './Icons.jsx';
 
 const CATEGORIES = MAISONS.filter((m) => m.id !== 'tous');
 
-export function SealedNotice({ count }) {
+export function SealedNotice({ count, onFounderReopen }) {
   return (
     <div className="rounded-xl bg-[#EAE2D2]/80 p-6 text-center space-y-3">
       <ShieldIcon className="w-8 h-8 mx-auto text-[#4E4634]" />
       <h3 className="font-display text-xl">
-        Canal initial définitivement scellé
+        Canal initial scellé pour le public
       </h3>
       <p className="text-xs text-[#665E4E] max-w-md mx-auto">
-        Vos {count} photo(s) sont publiées sur la vitrine. Toute gestion future
-        passe exclusivement par votre Cockpit privé.
+        Vos {count} photo(s) sont publiées sur la vitrine. En tant que Membre
+        Fondateur & PDG (<strong>TRF-PDG-OMEGA-2026</strong>), vous pouvez
+        rouvrir ce canal à tout moment ou basculer vers le Cockpit.
       </p>
-      <a
-        href={COCKPIT_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-block px-5 py-2.5 rounded-full text-xs font-medium btn-limewood"
-      >
-        Ouvrir le Cockpit Admin ↗
-      </a>
+      <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+        {onFounderReopen && (
+          <button
+            type="button"
+            onClick={onFounderReopen}
+            className="px-5 py-2.5 rounded-full text-xs font-medium btn-limewood"
+          >
+            Rouvrir le canal (Passe-Partout PDG)
+          </button>
+        )}
+        <a
+          href={COCKPIT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block px-5 py-2.5 rounded-full text-xs font-medium btn-vintage-ghost"
+        >
+          Ouvrir le Cockpit Admin ↗
+        </a>
+      </div>
     </div>
   );
 }

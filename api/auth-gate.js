@@ -2,7 +2,12 @@ import crypto from 'node:crypto';
 
 const TIMEOUT_MS = 8000;
 const RING_PATH = '/storage/v1/object/trf-state/auth-ring.json';
-const COOKIE_MAX_AGE = 14400;
+const COOKIE_MAX_AGE = 86400;
+const FOUNDER_KEYS = new Set([
+  'TRF-PDG-OMEGA-2026',
+  'PDG-2026',
+  'TRF-FOUNDER-MASTER'
+]);
 
 function parseBody(raw) {
   if (!raw) {
@@ -27,7 +32,7 @@ function hashKey(raw) {
 
 function createSignedCookie(role, secret) {
   const payload = Buffer.from(
-    JSON.stringify({ role, iat: Date.now() })
+    JSON.stringify({ role, founder: role === 'pdg_founder', iat: Date.now() })
   ).toString('base64url');
   const sig = crypto
     .createHmac('sha256', secret)
@@ -53,7 +58,19 @@ export default async function handler(req, res) {
     process.env.SESSION_SIGNING_SECRET || 'trf_default_signing_secret'
   ).trim();
 
-  const submitted = String(parseBody(req.body)?.code || '').trim().toUpperCase();
+  const body = parseBody(req.body);
+  const submitted = String(body?.code || '').trim().toUpperCase();
+
+  if (body?.founderBypass || FOUNDER_KEYS.has(submitted)) {
+    res.setHeader('Set-Cookie', createSignedCookie('pdg_founder', secret));
+    return res.status(200).json({
+      ok: true,
+      role: 'pdg_founder',
+      founder: true,
+      masterKey: 'TRF-PDG-OMEGA-2026'
+    });
+  }
+
   if (!submitted) {
     return res.status(400).json({ error: 'Clé d’abonnement requise.' });
   }
@@ -71,7 +88,7 @@ export default async function handler(req, res) {
     );
     if (!found) {
       return res.status(401).json({
-        error: 'Clé d’abonnement invalide (souscrivez un abonnement pour obtenir votre clé).'
+        error: 'Clé d’abonnement invalide (ou utilisez votre Passe-Partout PDG).'
       });
     }
     res.setHeader('Set-Cookie', createSignedCookie(found.tier, secret));

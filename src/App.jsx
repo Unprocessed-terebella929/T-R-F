@@ -118,19 +118,41 @@ function ActiveView({
   );
 }
 
-function SiteFooter() {
+function SiteFooter({ onOpenImport }) {
   return (
     <footer className={FOOTER_CLS}>
       <div className={FOOTER_ROW_CLS}>
         <span>© 2026 Ta référence.com — {BRAND_SLOGAN}</span>
-        <a
-          href={COCKPIT_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-[#1C1914] transition-colors py-1"
-        >
-          Accès Cockpit privé ↗
-        </a>
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+          <span className="text-[10px] tracking-[0.16em] uppercase text-[#4E4634] font-bold">
+            ✦ Passe-Partout PDG :
+          </span>
+          <button
+            type="button"
+            onClick={onOpenImport}
+            className="hover:text-[#1C1914] underline decoration-[#C2B088] underline-offset-2 transition-colors py-1"
+          >
+            Canal #Initial
+          </button>
+          <span>·</span>
+          <a
+            href={`${COCKPIT_URL}?cercle=privilege`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-[#1C1914] transition-colors py-1"
+          >
+            Mode Privilège (Admin) ↗
+          </a>
+          <span>·</span>
+          <a
+            href={`${COCKPIT_URL}?cercle=sovereign`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-[#1C1914] font-bold text-[#1C1914] transition-colors py-1"
+          >
+            Mode Souverain (Admin+) ↗
+          </a>
+        </div>
       </div>
     </footer>
   );
@@ -333,7 +355,9 @@ function useImportModal() {
     }
   };
 
-  return { importOpen, closePrivatePanel };
+  const openPrivatePanel = () => setImportOpen(true);
+
+  return { importOpen, openPrivatePanel, closePrivatePanel };
 }
 
 function BackToTopButton({ visible }) {
@@ -384,7 +408,7 @@ export default function App() {
   const store = useStoreState();
   const [studioItem, setStudioItem] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
-  const { importOpen, closePrivatePanel } = useImportModal();
+  const { importOpen, openPrivatePanel, closePrivatePanel } = useImportModal();
   const nav = useAppNavigation(cartOpen, importOpen);
 
   return (
@@ -422,7 +446,7 @@ export default function App() {
           />
         </div>
       </main>
-      <SiteFooter />
+      <SiteFooter onOpenImport={openPrivatePanel} />
       <BackToTopButton visible={nav.showTop && !nav.chromeHidden} />
       <AppOverlays
         store={store}

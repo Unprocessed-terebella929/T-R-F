@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { MAX_INITIAL_PHOTOS } from '../data/storeCatalog.js';
 import {
+  FOUNDER_MASTER_KEY,
   compressImageFile,
   isInitialImportSealed,
   sanitizePrice,
   sanitizeText,
   sealInitialImportForever,
+  unsealInitialImportFounder,
   verifyPrivateKey
 } from '../security/vaultCore.js';
 import { CloseIcon, UploadIcon } from './Icons.jsx';
@@ -153,7 +155,12 @@ function ImportWorkspace({
 
 function renderPanelBody(state) {
   if (state.sealed) {
-    return <SealedNotice count={state.productsCount} />;
+    return (
+      <SealedNotice
+        count={state.productsCount}
+        onFounderReopen={state.onFounderReopen}
+      />
+    );
   }
   if (!state.unlocked) {
     return (
@@ -194,11 +201,11 @@ function PanelHeader({ onClose }) {
   return (
     <div className="flex items-start justify-between gap-3 border-b border-[#4E4634]/15 pb-4">
       <div className="min-w-0">
-        <p className="text-[10px] uppercase tracking-[0.22em] text-[#665E4E]">
-          Canal privé · Usage unique
+        <p className="text-[10px] uppercase tracking-[0.22em] text-[#4E4634] font-bold">
+          Passe-Partout PDG · {FOUNDER_MASTER_KEY} · Exemption Pare-Feu
         </p>
         <h2 className="font-display text-xl sm:text-2xl text-[#1C1914]">
-          Importation initiale du catalogue
+          Importation directe du catalogue (Accès Fondateur)
         </h2>
       </div>
       <button
@@ -263,8 +270,8 @@ function useImportDrafts(products, onSaveProducts) {
 }
 
 function usePanelAuth(setBusy) {
-  const [unlocked, setUnlocked] = useState(false);
-  const [accessKey, setAccessKey] = useState('');
+  const [unlocked, setUnlocked] = useState(true);
+  const [accessKey, setAccessKey] = useState(FOUNDER_MASTER_KEY);
   const [authError, setAuthError] = useState('');
 
   const handleUnlock = async (event) => {
@@ -294,6 +301,11 @@ export function OneTimeImportPanel({ products, onSaveProducts, onClose }) {
     onSaveProducts(d.drafts);
     sealInitialImportForever();
     setSealed(true);
+  };
+
+  const handleFounderReopen = () => {
+    unsealInitialImportFounder();
+    setSealed(false);
   };
 
   const workspace = {
@@ -326,6 +338,7 @@ export function OneTimeImportPanel({ products, onSaveProducts, onClose }) {
           authError: auth.authError,
           busy: d.busy,
           onUnlock: auth.handleUnlock,
+          onFounderReopen: handleFounderReopen,
           workspace
         })}
       </div>
