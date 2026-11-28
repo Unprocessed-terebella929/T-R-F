@@ -52,14 +52,19 @@ function readSupabaseConfig() {
   };
 }
 
+function buildSupabaseHeaders(key, extra = {}) {
+  const headers = { apikey: key, ...extra };
+  if (key.startsWith('eyJ')) {
+    headers.Authorization = `Bearer ${key}`;
+  }
+  return headers;
+}
+
 async function fetchStoreState(cfg) {
   const endpoint =
     `${cfg.url}/rest/v1/trf_store_state?id=eq.main&select=payload,updated_at`;
   const resp = await fetch(endpoint, {
-    headers: {
-      apikey: cfg.key,
-      Authorization: `Bearer ${cfg.key}`
-    },
+    headers: buildSupabaseHeaders(cfg.key),
     signal: AbortSignal.timeout(TIMEOUT_MS)
   });
   if (!resp.ok) {
@@ -73,12 +78,10 @@ async function upsertStoreState(cfg, payload) {
   const endpoint = `${cfg.url}/rest/v1/trf_store_state`;
   const resp = await fetch(endpoint, {
     method: 'POST',
-    headers: {
-      apikey: cfg.key,
-      Authorization: `Bearer ${cfg.key}`,
+    headers: buildSupabaseHeaders(cfg.key, {
       'Content-Type': 'application/json',
       Prefer: 'resolution=merge-duplicates,return=representation'
-    },
+    }),
     body: JSON.stringify({
       id: 'main',
       payload,
