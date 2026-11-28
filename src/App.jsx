@@ -20,15 +20,17 @@ import {
 
 const TAB_ORDER = NAV_TABS.map((t) => t.id);
 const SCROLL_TOP_PX = 260;
-const SCROLL_HIDE_START_PX = 72;
-const SCROLL_DELTA_MIN = 10;
-const SWIPE_MIN_PX = 72;
-const SWIPE_AXIS_RATIO = 1.6;
+const SCROLL_HIDE_START_PX = 140;
+const SCROLL_DELTA_DOWN = 14;
+const SCROLL_DELTA_UP = -6;
+const SWIPE_MIN_PX = 54;
+const SWIPE_AXIS_RATIO = 1.35;
+const SWIPE_COOLDOWN_MS = 160;
 const ORDER_CODE_MIN = 1000;
 const ORDER_CODE_SPAN = 9000;
 const MAX_SIGNATURES = 50;
 const SWIPE_IGNORE_SEL =
-  'input, select, textarea, button, .no-scrollbar, [role="dialog"]';
+  'input, select, textarea, button, a, label, .no-scrollbar, [role="dialog"]';
 
 const SHELL_WIDTH =
   'max-w-6xl xl:max-w-7xl 2xl:max-w-[1440px] mx-auto px-3.5 sm:px-6 lg:px-8';
@@ -116,14 +118,9 @@ function ActiveView({
   );
 }
 
-function SiteFooter({ hidden }) {
-  const anim = hidden
-    ? 'opacity-0 translate-y-4 pointer-events-none'
-    : 'opacity-100 translate-y-0';
+function SiteFooter() {
   return (
-    <footer
-      className={`${FOOTER_CLS} transition-[opacity,transform] duration-300 ${anim}`}
-    >
+    <footer className={FOOTER_CLS}>
       <div className={FOOTER_ROW_CLS}>
         <span>© 2026 Ta référence.com — {BRAND_SLOGAN}</span>
         <a
@@ -231,16 +228,14 @@ function useScrollChrome() {
 
   useEffect(() => {
     const onScroll = () => {
-      const y = window.scrollY;
+      const y = Math.max(0, window.scrollY);
       const delta = y - lastY.current;
-      const atBottom =
-        window.innerHeight + y >= document.documentElement.scrollHeight - 24;
       setShowTop(y > SCROLL_TOP_PX);
-      if (y <= SCROLL_HIDE_START_PX || atBottom) {
+      if (y <= SCROLL_HIDE_START_PX) {
         setChromeHidden(false);
-      } else if (delta > SCROLL_DELTA_MIN) {
+      } else if (delta > SCROLL_DELTA_DOWN) {
         setChromeHidden(true);
-      } else if (delta < -SCROLL_DELTA_MIN) {
+      } else if (delta < SCROLL_DELTA_UP) {
         setChromeHidden(false);
       }
       lastY.current = y;
@@ -249,28 +244,55 @@ function useScrollChrome() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  return { showTop, chromeHidden, resetChrome: () => setChromeHidden(false) };
+  const resetChrome = () => {
+    lastY.current = 0;
+    setChromeHidden(false);
+    setShowTop(false);
+  };
+
+  return { showTop, chromeHidden, resetChrome };
 }
 
 function useAppNavigation(cartOpen, importOpen) {
   const [activeTab, setActiveTab] = useState('boutique');
   const chrome = useScrollChrome();
-  const touchStart = useRef({ x: 0, y: 0, ignored: false });
+  const touchStart = useRef({ x: 0, y: 0, ignored: false, time: 0 });
+  const lastSwipeAt = useRef(0);
 
   const switchTab = (tabId) => {
-    setActiveTab(tabId);
+    if (tabId === activeTab) {
+      return;
+    }
     chrome.resetChrome();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setActiveTab(tabId);
+    if (window.scrollY > 0) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
   };
 
   const handleTouchStart = (e) => {
+    if (e.touches.length !== 1) {
+      touchStart.current.ignored = true;
+      return;
+    }
     const t = e.touches[0];
     const ignored = Boolean(e.target?.closest?.(SWIPE_IGNORE_SEL));
-    touchStart.current = { x: t.clientX, y: t.clientY, ignored };
+    touchStart.current = {
+      x: t.clientX,
+      y: t.clientY,
+      ignored,
+      time: Date.now()
+    };
   };
 
   const handleTouchEnd = (e) => {
-    if (touchStart.current.ignored || cartOpen || importOpen) {
+    const now = Date.now();
+    if (
+      touchStart.current.ignored ||
+      cartOpen ||
+      importOpen ||
+      now - lastSwipeAt.current < SWIPE_COOLDOWN_MS
+    ) {
       return;
     }
     const t = e.changedTouches[0];
@@ -280,6 +302,7 @@ function useAppNavigation(cartOpen, importOpen) {
       t.clientY - touchStart.current.y
     );
     if (next) {
+      lastSwipeAt.current = now;
       switchTab(next);
     }
   };
@@ -399,7 +422,7 @@ export default function App() {
           />
         </div>
       </main>
-      <SiteFooter hidden={nav.chromeHidden} />
+      <SiteFooter />
       <BackToTopButton visible={nav.showTop && !nav.chromeHidden} />
       <AppOverlays
         store={store}

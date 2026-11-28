@@ -223,8 +223,8 @@ export function Header({
   const { scrolled, progress } = useScrollProgress();
   const shadow = scrolled ? 'shadow-md shadow-[#1C1914]/8' : '';
   const visibility = hidden
-    ? '-translate-y-full opacity-0 pointer-events-none'
-    : 'translate-y-0 opacity-100';
+    ? '-translate-y-full pointer-events-none'
+    : 'translate-y-0';
 
   return (
     <>
