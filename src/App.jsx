@@ -42,13 +42,7 @@ const FOOTER_ROW_CLS = [
   'flex flex-col sm:flex-row items-center justify-between',
   'gap-2 text-[11px] text-[#665E4E]'
 ].join(' ');
-const TOP_BTN_CLS = [
-  'fixed z-30 min-w-[44px] min-h-[44px]',
-  'bottom-[max(1.25rem,env(safe-area-inset-bottom))]',
-  'right-[max(1.25rem,env(safe-area-inset-right))]',
-  'flex items-center justify-center rounded-full',
-  'btn-limewood shadow-lg animate-rise'
-].join(' ');
+const TOP_BTN_CLS = 'back-to-top animate-rise';
 
 function isPrivateImportHash() {
   return window.location.hash === '#canal-initial';
@@ -330,7 +324,7 @@ function BackToTopButton({ visible }) {
       className={TOP_BTN_CLS}
       aria-label="Remonter en haut"
     >
-      <ArrowUpIcon className="w-4 h-4" />
+      <ArrowUpIcon className="w-3.5 h-3.5" />
     </button>
   );
 }

@@ -129,6 +129,47 @@ body {
   box-shadow: 0 0 10px rgba(194, 176, 136, 0.75);
 }
 
+/* Pastille discrète « Retour en haut » fondue dans le parchemin */
+.back-to-top {
+  position: fixed;
+  z-index: 30;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  color: var(--limewood-deep);
+  background-color: rgba(250, 247, 240, 0.72);
+  border: 1px solid rgba(194, 176, 136, 0.55);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 253, 246, 0.9),
+    inset 0 -1px 0 rgba(194, 176, 136, 0.4),
+    0 6px 14px -8px rgba(28, 25, 20, 0.35);
+  transition: background-color 220ms ease, color 220ms ease,
+    transform 160ms ease, opacity 220ms ease;
+}
+
+.back-to-top:hover {
+  background-color: var(--limewood-deep);
+  color: var(--surface-ivory);
+}
+
+.back-to-top:active {
+  transform: scale(0.92);
+}
+
+@media (min-width: 1024px) {
+  .back-to-top {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
 /* Cadre d'éclairage relief muséal aux 4 côtés du viewport (H / D / B / G) */
 .viewport-relief-frame {
   position: fixed;
