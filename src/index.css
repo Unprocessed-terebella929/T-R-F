@@ -129,13 +129,40 @@ body {
   box-shadow: 0 0 10px rgba(194, 176, 136, 0.75);
 }
 
-/* Cartes d'archives & produits avec reflet vitrine joaillière */
+/* Cadre d'éclairage relief muséal aux 4 côtés du viewport (H / D / B / G) */
+.viewport-relief-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 25;
+  box-shadow:
+    inset 0 18px 28px -18px rgba(228, 210, 166, 0.62),
+    inset 0 -18px 28px -18px rgba(78, 70, 52, 0.24),
+    inset 18px 0 28px -18px rgba(228, 210, 166, 0.5),
+    inset -18px 0 28px -18px rgba(194, 176, 136, 0.5),
+    inset 0 1px 0 rgba(255, 253, 246, 0.85),
+    inset 0 -1px 0 rgba(194, 176, 136, 0.45),
+    inset 1px 0 0 rgba(255, 252, 242, 0.72),
+    inset -1px 0 0 rgba(194, 176, 136, 0.45);
+}
+
+/* Cartes d'archives & produits avec éclairage relief sur les 4 côtés + reflet vitrine */
 .archival-card {
   position: relative;
   overflow: hidden;
   background-color: var(--surface-ivory);
-  border: 1px solid rgba(78, 70, 52, 0.16);
-  box-shadow: 0 10px 26px -18px rgba(28, 25, 20, 0.25);
+  border: 1px solid rgba(194, 176, 136, 0.42);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 253, 247, 0.94),
+    inset 1.5px 0 0 rgba(255, 251, 240, 0.75),
+    inset -1.5px 0 0 rgba(194, 176, 136, 0.52),
+    inset 0 -2px 0 rgba(78, 70, 52, 0.22),
+    inset 0 8px 16px -12px rgba(228, 210, 166, 0.6),
+    inset 0 -8px 16px -12px rgba(194, 176, 136, 0.4),
+    inset 8px 0 16px -12px rgba(228, 210, 166, 0.45),
+    inset -8px 0 16px -12px rgba(194, 176, 136, 0.42),
+    0 12px 28px -16px rgba(28, 25, 20, 0.26),
+    0 0 16px -8px rgba(194, 176, 136, 0.35);
   transition: transform 340ms cubic-bezier(0.22, 1, 0.36, 1),
     border-color 260ms ease,
     box-shadow 340ms ease;
@@ -178,11 +205,14 @@ body {
 @media (hover: hover) and (pointer: fine) {
   .archival-card:hover {
     transform: translateY(-5px);
-    border-color: rgba(194, 176, 136, 0.72);
+    border-color: rgba(194, 176, 136, 0.82);
     box-shadow:
+      inset 0 2px 0 rgba(255, 254, 249, 0.98),
+      inset 2px 0 0 rgba(228, 210, 166, 0.8),
+      inset -2px 0 0 rgba(228, 210, 166, 0.72),
+      inset 0 -2px 0 rgba(194, 176, 136, 0.65),
       0 24px 40px -18px rgba(28, 25, 20, 0.32),
-      0 0 0 1px rgba(194, 176, 136, 0.28),
-      0 0 26px -8px rgba(194, 176, 136, 0.55);
+      0 0 28px -6px rgba(194, 176, 136, 0.62);
   }
 
   .archival-card:hover::before {
@@ -199,11 +229,17 @@ body {
   animation-delay: var(--glint-delay, 0s);
 }
 
-/* Bandeau éditorial avec liseré champagne-tilleul animé */
+/* Bandeau éditorial avec éclairage relief 4 côtés + liseré animé */
 .bling-banner {
   position: relative;
   overflow: hidden;
-  box-shadow: 0 14px 32px -22px rgba(28, 25, 20, 0.26);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 253, 246, 0.92),
+    inset 1.5px 0 0 rgba(228, 210, 166, 0.58),
+    inset -1.5px 0 0 rgba(228, 210, 166, 0.58),
+    inset 0 -2px 0 rgba(78, 70, 52, 0.2),
+    0 16px 34px -20px rgba(28, 25, 20, 0.28),
+    0 0 20px -10px rgba(194, 176, 136, 0.42);
 }
 
 .bling-banner::before {

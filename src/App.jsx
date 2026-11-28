@@ -20,6 +20,8 @@ import {
 
 const TAB_ORDER = NAV_TABS.map((t) => t.id);
 const SCROLL_TOP_PX = 260;
+const SCROLL_HIDE_START_PX = 72;
+const SCROLL_DELTA_MIN = 10;
 const SWIPE_MIN_PX = 72;
 const SWIPE_AXIS_RATIO = 1.6;
 const ORDER_CODE_MIN = 1000;
@@ -120,9 +122,14 @@ function ActiveView({
   );
 }
 
-function SiteFooter() {
+function SiteFooter({ hidden }) {
+  const anim = hidden
+    ? 'opacity-0 translate-y-4 pointer-events-none'
+    : 'opacity-100 translate-y-0';
   return (
-    <footer className={FOOTER_CLS}>
+    <footer
+      className={`${FOOTER_CLS} transition-[opacity,transform] duration-300 ${anim}`}
+    >
       <div className={FOOTER_ROW_CLS}>
         <span>© 2026 Ta référence.com — {BRAND_SLOGAN}</span>
         <a
@@ -223,19 +230,42 @@ function useStoreState() {
   };
 }
 
-function useAppNavigation(cartOpen, importOpen) {
-  const [activeTab, setActiveTab] = useState('boutique');
+function useScrollChrome() {
   const [showTop, setShowTop] = useState(false);
-  const touchStart = useRef({ x: 0, y: 0, ignored: false });
+  const [chromeHidden, setChromeHidden] = useState(false);
+  const lastY = useRef(0);
 
   useEffect(() => {
-    const onScroll = () => setShowTop(window.scrollY > SCROLL_TOP_PX);
+    const onScroll = () => {
+      const y = window.scrollY;
+      const delta = y - lastY.current;
+      const atBottom =
+        window.innerHeight + y >= document.documentElement.scrollHeight - 24;
+      setShowTop(y > SCROLL_TOP_PX);
+      if (y <= SCROLL_HIDE_START_PX || atBottom) {
+        setChromeHidden(false);
+      } else if (delta > SCROLL_DELTA_MIN) {
+        setChromeHidden(true);
+      } else if (delta < -SCROLL_DELTA_MIN) {
+        setChromeHidden(false);
+      }
+      lastY.current = y;
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  return { showTop, chromeHidden, resetChrome: () => setChromeHidden(false) };
+}
+
+function useAppNavigation(cartOpen, importOpen) {
+  const [activeTab, setActiveTab] = useState('boutique');
+  const chrome = useScrollChrome();
+  const touchStart = useRef({ x: 0, y: 0, ignored: false });
+
   const switchTab = (tabId) => {
     setActiveTab(tabId);
+    chrome.resetChrome();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -260,7 +290,14 @@ function useAppNavigation(cartOpen, importOpen) {
     }
   };
 
-  return { activeTab, showTop, switchTab, handleTouchStart, handleTouchEnd };
+  return {
+    activeTab,
+    showTop: chrome.showTop,
+    chromeHidden: chrome.chromeHidden,
+    switchTab,
+    handleTouchStart,
+    handleTouchEnd
+  };
 }
 
 function useImportModal() {
@@ -339,11 +376,13 @@ export default function App() {
       onTouchStart={nav.handleTouchStart}
       onTouchEnd={nav.handleTouchEnd}
     >
+      <div className="viewport-relief-frame" aria-hidden="true" />
       <Header
         activeTab={nav.activeTab}
         onChangeTab={nav.switchTab}
         cartCount={store.cart.length}
         onOpenCart={() => setCartOpen(true)}
+        hidden={nav.chromeHidden}
       />
       <main className={MAIN_CLS}>
         <div key={nav.activeTab} className="animate-tab-enter">
@@ -366,8 +405,8 @@ export default function App() {
           />
         </div>
       </main>
-      <SiteFooter />
-      <BackToTopButton visible={nav.showTop} />
+      <SiteFooter hidden={nav.chromeHidden} />
+      <BackToTopButton visible={nav.showTop && !nav.chromeHidden} />
       <AppOverlays
         store={store}
         cartOpen={cartOpen}

@@ -53,7 +53,8 @@ const SLOGAN_CLS = [
 const HEADER_BASE_CLS = [
   'site-header sticky top-0 z-30 pt-[env(safe-area-inset-top)]',
   'border-b border-[#4E4634]/15 bg-[#F4EFE4]/92 backdrop-blur-md',
-  'transition-shadow duration-300'
+  'transition-[transform,box-shadow,opacity] duration-300 ease-out',
+  'will-change-transform'
 ].join(' ');
 const BAR_ROW_CLS = [
   'max-w-6xl xl:max-w-7xl 2xl:max-w-[1440px] mx-auto',
@@ -212,50 +213,61 @@ function useScrollProgress() {
   return { scrolled, progress };
 }
 
-export function Header({ activeTab, onChangeTab, cartCount, onOpenCart }) {
+export function Header({
+  activeTab,
+  onChangeTab,
+  cartCount,
+  onOpenCart,
+  hidden
+}) {
   const { scrolled, progress } = useScrollProgress();
   const shadow = scrolled ? 'shadow-md shadow-[#1C1914]/8' : '';
+  const visibility = hidden
+    ? '-translate-y-full opacity-0 pointer-events-none'
+    : 'translate-y-0 opacity-100';
 
   return (
-    <header className={`${HEADER_BASE_CLS} ${shadow}`}>
-      <div className="h-[2px] w-full bg-[#4E4634]/10 overflow-hidden">
+    <>
+      <div className="fixed top-0 left-0 right-0 z-40 h-[2px] bg-[#4E4634]/10 pointer-events-none">
         <div
           className="h-full scroll-progress-gold transition-[width] duration-150"
           style={{ width: `${progress}%` }}
         />
       </div>
-      <div className={BAR_ROW_CLS}>
-        <button
-          type="button"
-          onClick={() => onChangeTab('boutique')}
-          className="text-left focus:outline-none min-w-0 shrink"
-        >
-          <BrandLogo />
-        </button>
-        <DesktopNav activeTab={activeTab} onChangeTab={onChangeTab} />
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <a
-            href={COCKPIT_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={COCKPIT_CLS}
-          >
-            <span>Cockpit</span>
-            <ArrowOutIcon className="w-3.5 h-3.5 text-[#4E4634]" />
-          </a>
+      <header className={`${HEADER_BASE_CLS} ${shadow} ${visibility}`}>
+        <div className={BAR_ROW_CLS}>
           <button
             type="button"
-            onClick={onOpenCart}
-            className={CART_BTN_CLS}
-            aria-label="Ouvrir le panier"
+            onClick={() => onChangeTab('boutique')}
+            className="text-left focus:outline-none min-w-0 shrink"
           >
-            <BagIcon className="w-3.5 h-3.5 shrink-0" />
-            <span>Panier</span>
-            {cartCount > 0 && <span className={BADGE_CLS}>{cartCount}</span>}
+            <BrandLogo />
           </button>
+          <DesktopNav activeTab={activeTab} onChangeTab={onChangeTab} />
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <a
+              href={COCKPIT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={COCKPIT_CLS}
+            >
+              <span>Cockpit</span>
+              <ArrowOutIcon className="w-3.5 h-3.5 text-[#4E4634]" />
+            </a>
+            <button
+              type="button"
+              onClick={onOpenCart}
+              className={CART_BTN_CLS}
+              aria-label="Ouvrir le panier"
+            >
+              <BagIcon className="w-3.5 h-3.5 shrink-0" />
+              <span>Panier</span>
+              {cartCount > 0 && <span className={BADGE_CLS}>{cartCount}</span>}
+            </button>
+          </div>
         </div>
-      </div>
-      <MobileNav activeTab={activeTab} onChangeTab={onChangeTab} />
-    </header>
+        <MobileNav activeTab={activeTab} onChangeTab={onChangeTab} />
+      </header>
+    </>
   );
 }
