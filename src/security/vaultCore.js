@@ -45,7 +45,7 @@ export function writeStorage(key, value) {
 }
 
 export function isInitialImportSealed() {
-  return readStorage(STORAGE_KEYS.SEALED, false) === true;
+  return Boolean(readStorage(STORAGE_KEYS.SEALED, false));
 }
 
 export function sealInitialImportForever() {

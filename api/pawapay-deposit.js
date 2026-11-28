@@ -8,20 +8,22 @@ const CORRESPONDENTS = {
 
 const CURRENCIES = ['USD', 'CDF'];
 const MAX_AMOUNT = 1000000;
+const TIMEOUT_MS = 15000;
 const DRC_PHONE_RE = /^243[0-9]{9}$/;
+const DEFAULT_BASE_URL = 'https://api.sandbox.pawapay.io';
 
 function parseBody(raw) {
   if (!raw) {
     return {};
   }
-  if (typeof raw === 'string') {
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return {};
-    }
+  if (typeof raw !== 'string') {
+    return raw;
   }
-  return raw;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
 }
 
 function normalizePhone(raw) {
@@ -41,21 +43,18 @@ function formatAmount(amount, currency) {
 
 function validateInput(body) {
   const correspondent = CORRESPONDENTS[body?.operator];
-  const currency = CURRENCIES.includes(body?.currency)
-    ? body.currency
-    : 'USD';
-  const amount = Number(body?.amount);
-  const phone = normalizePhone(body?.phone);
-
   if (!correspondent) {
     return { error: 'Opérateur Mobile Money non reconnu.' };
   }
+  const amount = Number(body?.amount);
   if (!Number.isFinite(amount) || amount <= 0 || amount > MAX_AMOUNT) {
     return { error: 'Montant invalide.' };
   }
+  const phone = normalizePhone(body?.phone);
   if (!DRC_PHONE_RE.test(phone)) {
-    return { error: 'Numéro RDC invalide (ex: 0812345678 ou 243812345678).' };
+    return { error: 'Numéro RDC invalide (ex: 0812345678).' };
   }
+  const currency = CURRENCIES.includes(body?.currency) ? body.currency : 'USD';
   return {
     correspondent,
     currency,
@@ -64,74 +63,83 @@ function validateInput(body) {
   };
 }
 
+function buildDepositPayload(depositId, valid) {
+  return {
+    depositId,
+    amount: valid.amount,
+    currency: valid.currency,
+    correspondent: valid.correspondent,
+    payer: { type: 'MSISDN', address: { value: valid.phone } },
+    customerTimestamp: new Date().toISOString(),
+    statementDescription: 'Ta reference'
+  };
+}
+
+function safeParseJson(text) {
+  if (!text) {
+    return {};
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { raw: text.slice(0, 120) };
+  }
+}
+
+async function sendDepositRequest(baseUrl, token, payload) {
+  const response = await fetch(`${baseUrl}/deposits`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(TIMEOUT_MS)
+  });
+  const data = safeParseJson(await response.text());
+  return { ok: response.ok, status: response.status, data };
+}
+
+function getRejectionMessage(data) {
+  return (
+    data?.rejectionReason?.rejectionMessage ||
+    data?.errorMessage ||
+    'Demande refusée par pawaPay.'
+  );
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Méthode non autorisée.' });
   }
-
   const token = (process.env.PAWAPAY_API_TOKEN || '').trim();
-  const baseUrl = (
-    process.env.PAWAPAY_BASE_URL || 'https://api.sandbox.pawapay.io'
-  ).replace(/\/$/, '');
-
   if (!token) {
     return res.status(503).json({
       error: 'Clé PAWAPAY_API_TOKEN manquante dans Vercel.'
     });
   }
-
   const valid = validateInput(parseBody(req.body));
   if (valid.error) {
     return res.status(400).json({ error: valid.error });
   }
-
+  const baseUrl = (process.env.PAWAPAY_BASE_URL || DEFAULT_BASE_URL).replace(
+    /\/$/,
+    ''
+  );
   const depositId = crypto.randomUUID();
-  const payload = {
-    depositId,
-    amount: valid.amount,
-    currency: valid.currency,
-    correspondent: valid.correspondent,
-    payer: {
-      type: 'MSISDN',
-      address: { value: valid.phone }
-    },
-    customerTimestamp: new Date().toISOString(),
-    statementDescription: 'Ta reference'
-  };
-
   try {
-    const response = await fetch(`${baseUrl}/deposits`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(15000)
-    });
-
-    const text = await response.text();
-    let data = {};
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch {
-      data = { raw: text.slice(0, 120) };
-    }
-
-    if (!response.ok || data?.status === 'REJECTED') {
-      const reason =
-        data?.rejectionReason?.rejectionMessage ||
-        data?.errorMessage ||
-        'Demande refusée par pawaPay.';
-      return res.status(response.ok ? 400 : response.status).json({
-        error: reason,
-        status: data?.status || 'REJECTED'
+    const payload = buildDepositPayload(depositId, valid);
+    const result = await sendDepositRequest(baseUrl, token, payload);
+    if (!result.ok || result.data?.status === 'REJECTED') {
+      const code = result.ok ? 400 : result.status;
+      return res.status(code).json({
+        error: getRejectionMessage(result.data),
+        status: result.data?.status || 'REJECTED'
       });
     }
-
     return res.status(200).json({
       depositId,
-      status: data?.status || 'ACCEPTED',
+      status: result.data?.status || 'ACCEPTED',
       correspondent: valid.correspondent
     });
   } catch (err) {

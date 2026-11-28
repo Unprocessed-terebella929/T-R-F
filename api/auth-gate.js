@@ -3,19 +3,20 @@ import crypto from 'node:crypto';
 const ATTEMPTS = new Map();
 const MAX_TRIES = 5;
 const WINDOW_MS = 15 * 60 * 1000;
+const COOKIE_MAX_AGE = 7200;
 
 function parseBody(raw) {
   if (!raw) {
     return {};
   }
-  if (typeof raw === 'string') {
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return {};
-    }
+  if (typeof raw !== 'string') {
+    return raw;
   }
-  return raw;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
 }
 
 function getClientIp(req) {
@@ -63,48 +64,51 @@ function createSignedCookie(role, secret) {
     'Secure',
     'SameSite=Strict',
     'Path=/',
-    'Max-Age=7200'
+    `Max-Age=${COOKIE_MAX_AGE}`
   ].join('; ');
+}
+
+function readAuthConfig() {
+  return {
+    adminKey: (process.env.ADMIN_ACCESS_KEY || '').trim(),
+    adminPlusKey: (process.env.ADMIN_PLUS_ACCESS_KEY || '').trim(),
+    secret: (process.env.SESSION_SIGNING_SECRET || '').trim()
+  };
+}
+
+function resolveRole(submitted, config) {
+  if (config.adminPlusKey && safeCompare(submitted, config.adminPlusKey)) {
+    return 'admin_plus';
+  }
+  if (safeCompare(submitted, config.adminKey)) {
+    return 'admin';
+  }
+  return '';
 }
 
 export default function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Méthode non autorisée.' });
   }
-
   const ip = getClientIp(req);
   if (isRateLimited(ip)) {
     return res.status(429).json({
       error: 'Trop de tentatives. Réessayez dans 15 minutes.'
     });
   }
-
-  const adminKey = (process.env.ADMIN_ACCESS_KEY || '').trim();
-  const adminPlusKey = (process.env.ADMIN_PLUS_ACCESS_KEY || '').trim();
-  const secret = (process.env.SESSION_SIGNING_SECRET || '').trim();
-
-  if (!adminKey || !secret) {
+  const config = readAuthConfig();
+  if (!config.adminKey || !config.secret) {
     return res.status(503).json({
-      error: 'Variables ADMIN_ACCESS_KEY ou SESSION_SIGNING_SECRET manquantes.'
+      error: 'Variables ADMIN_ACCESS_KEY ou SESSION_SIGNING_SECRET absentes.'
     });
   }
-
-  const body = parseBody(req.body);
-  const submitted = String(body?.code || '').trim();
-
-  let role = '';
-  if (adminPlusKey && safeCompare(submitted, adminPlusKey)) {
-    role = 'admin_plus';
-  } else if (safeCompare(submitted, adminKey)) {
-    role = 'admin';
-  }
-
+  const submitted = String(parseBody(req.body)?.code || '').trim();
+  const role = resolveRole(submitted, config);
   if (!role) {
     recordFailure(ip);
     return res.status(401).json({ error: 'Clé privée incorrecte.' });
   }
-
   ATTEMPTS.delete(ip);
-  res.setHeader('Set-Cookie', createSignedCookie(role, secret));
+  res.setHeader('Set-Cookie', createSignedCookie(role, config.secret));
   return res.status(200).json({ ok: true, role });
 }
