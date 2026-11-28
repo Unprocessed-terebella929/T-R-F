@@ -4,6 +4,8 @@ const ATTEMPTS = new Map();
 const MAX_TRIES = 5;
 const WINDOW_MS = 15 * 60 * 1000;
 const COOKIE_MAX_AGE = 7200;
+const TIMEOUT_MS = 8000;
+const RING_PATH = '/storage/v1/object/trf-state/auth-ring.json';
 
 function parseBody(raw) {
   if (!raw) {
@@ -41,13 +43,18 @@ function recordFailure(ip) {
   ATTEMPTS.set(ip, entry);
 }
 
-function safeCompare(a, b) {
-  if (!a || !b) {
+function hashPassword(raw) {
+  return crypto
+    .createHash('sha256')
+    .update(`trf_salt_v1:${String(raw || '').trim()}`)
+    .digest('hex');
+}
+
+function safeEqualHex(hexA, hexB) {
+  if (!hexA || !hexB || hexA.length !== hexB.length) {
     return false;
   }
-  const hashA = crypto.createHash('sha256').update(a).digest();
-  const hashB = crypto.createHash('sha256').update(b).digest();
-  return crypto.timingSafeEqual(hashA, hashB);
+  return crypto.timingSafeEqual(Buffer.from(hexA), Buffer.from(hexB));
 }
 
 function createSignedCookie(role, secret) {
@@ -68,47 +75,142 @@ function createSignedCookie(role, secret) {
   ].join('; ');
 }
 
-function readAuthConfig() {
-  return {
-    adminKey: (process.env.ADMIN_ACCESS_KEY || '').trim(),
-    adminPlusKey: (process.env.ADMIN_PLUS_ACCESS_KEY || '').trim(),
-    secret: (process.env.SESSION_SIGNING_SECRET || '').trim()
-  };
+function readFallbackRing() {
+  try {
+    const raw = process.env.ADMIN_KEY_RING;
+    if (raw) {
+      const keys = JSON.parse(raw);
+      return { strictSequential: false, activeIndex: 0, rotationCount: 0, keys };
+    }
+  } catch {
+    // ignore malformed fallback
+  }
+  return { strictSequential: false, activeIndex: 0, rotationCount: 0, keys: [] };
 }
 
-function resolveRole(submitted, config) {
-  if (config.adminPlusKey && safeCompare(submitted, config.adminPlusKey)) {
-    return 'admin_plus';
+async function loadRing() {
+  const url = (process.env.SUPABASE_URL || '').trim().replace(/\/$/, '');
+  const key = (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim();
+  if (!url || !key) {
+    return readFallbackRing();
   }
-  if (safeCompare(submitted, config.adminKey)) {
-    return 'admin';
+  try {
+    const resp = await fetch(`${url}${RING_PATH}`, {
+      headers: { apikey: key, Authorization: `Bearer ${key}` },
+      signal: AbortSignal.timeout(TIMEOUT_MS)
+    });
+    if (!resp.ok) {
+      return readFallbackRing();
+    }
+    return await resp.json();
+  } catch {
+    return readFallbackRing();
   }
-  return '';
 }
 
-export default function handler(req, res) {
+async function saveRing(ring) {
+  const url = (process.env.SUPABASE_URL || '').trim().replace(/\/$/, '');
+  const key = (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim();
+  if (!url || !key) {
+    return;
+  }
+  try {
+    await fetch(`${url}${RING_PATH}`, {
+      method: 'POST',
+      headers: {
+        apikey: key,
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+        'x-upsert': 'true'
+      },
+      body: JSON.stringify(ring),
+      signal: AbortSignal.timeout(TIMEOUT_MS)
+    });
+  } catch {
+    // non-blocking rotation persist
+  }
+}
+
+function matchKeyInRing(submitted, ring) {
+  const candidateHash = hashPassword(submitted);
+  const keys = Array.isArray(ring?.keys) ? ring.keys : [];
+  if (!keys.length) {
+    return null;
+  }
+  const activeIdx = Number(ring.activeIndex || 0) % keys.length;
+  if (ring.strictSequential) {
+    const target = keys[activeIdx];
+    return safeEqualHex(candidateHash, target?.hash)
+      ? { key: target, index: activeIdx }
+      : null;
+  }
+  for (let i = 0; i < keys.length; i += 1) {
+    if (safeEqualHex(candidateHash, keys[i]?.hash)) {
+      return { key: keys[i], index: i };
+    }
+  }
+  return null;
+}
+
+export default async function handler(req, res) {
+  const ring = await loadRing();
+  const keys = Array.isArray(ring?.keys) ? ring.keys : [];
+  const activeIdx = keys.length ? Number(ring.activeIndex || 0) % keys.length : 0;
+
+  if (req.method === 'GET') {
+    const activeKey = keys[activeIdx] || null;
+    return res.status(200).json({
+      totalKeys: keys.length,
+      activeSlot: activeIdx + 1,
+      activeHint: activeKey?.hint || '•••',
+      strictSequential: Boolean(ring.strictSequential),
+      rotationCount: Number(ring.rotationCount || 0)
+    });
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Méthode non autorisée.' });
   }
   const ip = getClientIp(req);
   if (isRateLimited(ip)) {
-    return res.status(429).json({
-      error: 'Trop de tentatives. Réessayez dans 15 minutes.'
-    });
+    return res.status(429).json({ error: 'Trop de tentatives (15 min).' });
   }
-  const config = readAuthConfig();
-  if (!config.adminKey || !config.secret) {
-    return res.status(503).json({
-      error: 'Variables ADMIN_ACCESS_KEY ou SESSION_SIGNING_SECRET absentes.'
-    });
+  const secret = (process.env.SESSION_SIGNING_SECRET || '').trim();
+  if (!secret || !keys.length) {
+    return res.status(503).json({ error: 'Trousseau de clés non initialisé.' });
   }
   const submitted = String(parseBody(req.body)?.code || '').trim();
-  const role = resolveRole(submitted, config);
-  if (!role) {
+  const matched = matchKeyInRing(submitted, ring);
+  if (!matched) {
     recordFailure(ip);
-    return res.status(401).json({ error: 'Clé privée incorrecte.' });
+    const hint = ring.strictSequential
+      ? `Clé attendue en rotation : #${activeIdx + 1} (${keys[activeIdx]?.hint}).`
+      : 'Mot de passe incorrect.';
+    return res.status(401).json({ error: hint });
   }
+
   ATTEMPTS.delete(ip);
-  res.setHeader('Set-Cookie', createSignedCookie(role, config.secret));
-  return res.status(200).json({ ok: true, role });
+  const nextIndex = (matched.index + 1) % keys.length;
+  const nowIso = new Date().toISOString();
+  const nextRing = {
+    ...ring,
+    activeIndex: nextIndex,
+    rotationCount: Number(ring.rotationCount || 0) + 1,
+    updatedAt: nowIso,
+    keys: keys.map((k, idx) =>
+      idx === matched.index ? { ...k, lastUsedAt: nowIso.slice(0, 16).replace('T', ' ') } : k
+    )
+  };
+  await saveRing(nextRing);
+
+  const role = matched.key.role || 'admin_plus';
+  res.setHeader('Set-Cookie', createSignedCookie(role, secret));
+  return res.status(200).json({
+    ok: true,
+    role,
+    usedSlot: matched.index + 1,
+    nextSlot: nextIndex + 1,
+    nextHint: keys[nextIndex]?.hint || '•••',
+    rotationCount: nextRing.rotationCount
+  });
 }
