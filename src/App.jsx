@@ -13,6 +13,10 @@ import {
   readStorage,
   writeStorage
 } from './security/vaultCore.js';
+import {
+  pullPublishedState,
+  pushClientEvent
+} from './security/bridgeClient.js';
 
 const TAB_ORDER = NAV_TABS.map((t) => t.id);
 const SCROLL_TOP_PX = 260;
@@ -134,6 +138,24 @@ function SiteFooter() {
   );
 }
 
+function applyBridgePayload(payload, setters) {
+  if (Array.isArray(payload.products)) {
+    setters.setProducts(payload.products);
+    writeStorage(STORAGE_KEYS.PRODUCTS, payload.products);
+  }
+  if (Array.isArray(payload.orders)) {
+    setters.setOrders(payload.orders);
+    writeStorage(STORAGE_KEYS.ORDERS, payload.orders);
+  }
+  if (Array.isArray(payload.signatures)) {
+    setters.setSignatures(payload.signatures);
+    writeStorage(STORAGE_KEYS.SIGNATURES, payload.signatures);
+  }
+  if (typeof payload.sealed === 'boolean') {
+    writeStorage(STORAGE_KEYS.SEALED, payload.sealed);
+  }
+}
+
 function useStoreState() {
   const [products, setProducts] = useState(() =>
     readStorage(STORAGE_KEYS.PRODUCTS, [])
@@ -145,6 +167,18 @@ function useStoreState() {
   const [signatures, setSignatures] = useState(() =>
     readStorage(STORAGE_KEYS.SIGNATURES, [])
   );
+
+  useEffect(() => {
+    let active = true;
+    pullPublishedState().then((payload) => {
+      if (active && payload) {
+        applyBridgePayload(payload, { setProducts, setOrders, setSignatures });
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const saveProducts = (next) => {
     setProducts(next);
@@ -161,16 +195,19 @@ function useStoreState() {
     writeStorage(STORAGE_KEYS.CART, next);
   };
   const completeOrder = (paymentInfo) => {
-    const next = [buildOrder(cart, paymentInfo), ...orders];
+    const order = buildOrder(cart, paymentInfo);
+    const next = [order, ...orders];
     setOrders(next);
     writeStorage(STORAGE_KEYS.ORDERS, next);
     setCart([]);
     writeStorage(STORAGE_KEYS.CART, []);
+    pushClientEvent('order', order);
   };
   const addSignature = (entry) => {
     const next = [entry, ...signatures].slice(0, MAX_SIGNATURES);
     setSignatures(next);
     writeStorage(STORAGE_KEYS.SIGNATURES, next);
+    pushClientEvent('signature', entry);
   };
 
   return {
